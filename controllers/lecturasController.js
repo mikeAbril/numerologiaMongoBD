@@ -32,7 +32,7 @@ function calcularCaminoVida(fechaNacimiento) {
   return reducirNumero(total);
 }
 
- 
+
 // Lectura principal
 export const postLecturaPrincipal = async (req, res) => {
   try {
@@ -124,4 +124,3 @@ export const getLecturasUsuario = async (req, res) => {
   }
 };
 
-  
