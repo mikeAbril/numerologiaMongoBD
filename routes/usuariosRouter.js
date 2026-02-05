@@ -1,37 +1,100 @@
 import { Router } from "express";
-import { deleteUsuario, getUsuario, getUsuarioEmail, postUsuario, putUsuario, putUsuarioActivar, putUsuarioInactivar } from "../controllers/usuariosController.js";
-import { validarCampos } from "../middlewares/validar-campos.js";
 import { check } from "express-validator";
-import { validarEmail, validarExisteUsuario } from "../helpers/usuarios.js";
+import {
+    deleteUsuario,
+    getUsuario,
+    getUsuarioEmail,
+    postUsuario,
+    putUsuario,
+    putUsuarioActivar,
+    putUsuarioInactivar
+} from "../controllers/usuariosController.js"
 
-const router = new Router()
+import { validarCampos } from "../middlewares/validarCampos.js"
+import { validarUsuarioActivoMiddleware } from "../middlewares/validarUsuario.js";
 
-router.get(   "/",getUsuario)
+import {
+    validarEmail,
+    validarExisteUsuario,
+} from "../helpers/usuarios.js";
 
-router.get(   "/email"  , [
-    check('email').not().isEmpty(),
-    check('email',"No es un email valido").isEmail(),
-    validarCampos
-] ,getUsuarioEmail)
+const router = Router();
 
-router.post("/", [
-    check('nombre').not().isEmpty().isLength({min:3,max:50}),
-    check('edad').isNumeric(),
-    check('fechanacimiento',"formato de fecha no valido").isISO8601().isDate(),
-    check('email').isEmail(),    
-    check('correo').custom(validarEmail),
-    validarCampos
-],postUsuario)
+router.get("/", getUsuario);
+router.get("/email",[
+    check("email","El email es obligatorio").not().isEmpty(),
+    check("email", "Formato de email no válido").isEmail(),
+    validarCampos,
+],
+getUsuarioEmail
+);
 
-router.put("/:id", [    
-    check('nombre').not().isEmpty(),
-    check('id').isMongoId(),
-    check('id').custom(validarExisteUsuario),
-    validarCampos
-],putUsuario)
+router.post(
+  "/",
+  [
+    check("nombre", "El nombre es obligatorio")
+      .not()
+      .isEmpty()
+      .isLength({ min: 3, max: 50 }),
 
-router.put("/activar/:id",putUsuarioActivar)
-router.put("/inactivar/:id",putUsuarioInactivar)
-router.delete("/:id", deleteUsuario)
+    check("edad", "La edad debe ser numérica")
+      .optional()
+      .isNumeric(),
 
-export default router
+    check("fechanacimiento", "La fecha no es válida")
+      .optional()
+      .isISO8601()
+      .toDate(),
+
+    check("email", "Debe ser un email válido").isEmail(),
+    check("email").custom(validarEmail),
+
+    validarCampos,
+  ],
+  postUsuario
+);
+router.put(
+  "/:id",
+  [
+    check("id", "ID inválido").isMongoId(),
+    check("id").custom(validarExisteUsuario),
+
+    check("nombre", "El nombre es obligatorio").not().isEmpty(),
+
+    validarCampos,
+    validarUsuarioActivoMiddleware,  
+  ],
+  putUsuario
+);
+
+router.put(
+  "/activar/:id",
+  [
+    check("id", "ID inválido").isMongoId(),
+    check("id").custom(validarExisteUsuario),
+    validarCampos,
+  ],
+  putUsuarioActivar
+);
+
+router.put(
+  "/inactivar/:id",
+  [
+    check("id", "ID inválido").isMongoId(),
+    check("id").custom(validarExisteUsuario),
+    validarCampos,
+  ],
+  putUsuarioInactivar
+);
+
+router.delete(
+  "/:id",
+  [
+    check("id", "ID inválido").isMongoId(),
+    check("id").custom(validarExisteUsuario),
+    validarCampos,
+  ],
+  deleteUsuario
+);
+
+export default router;

@@ -1,38 +1,32 @@
 import Usuario from "../models/usuariosModel.js"
 
 // Obtener todos los usuarios
-const getUsuario = async (req, res) => {
+export const getUsuario = async (req, res) => {
   try {
     const usuarios = await Usuario.find()
+    res.json(usuarios)
+  } catch (error) {
+    res.status(400).json({error})
+  }
+}
+
+// Obtener usuario por email
+export const getUsuarioEmail = async (req, res) => {
+  try {
+    const { email } = req.query
+    const usuarios = await Usuario.findOne({ email })
+
+    if (!usuarios) {
+      return res.status(404).json({ msg: "Usuario no encontrado" })
+    }
     res.json(usuarios)
   } catch (error) {
     res.status(500).json({ msg: error.message })
   }
 }
 
-// Obtener usuario por email
-const getUsuarioEmail = async (req, res) => {
-  try {
-    const { email } = req.query
-
-    if (!email) {
-      return res.status(400).json({ msg: "El email es obligatorio" })
-    }
-
-    const usuario = await Usuario.findOne({ email })
-
-    if (!usuario) {
-      return res.status(404).json({ msg: "Usuario no encontrado" })
-    }
-
-    res.json(usuario)
-  } catch (error) {
-    res.status(500).json({ msg: error.message })
-  }
-}
-
 // Crear usuario
-const postUsuario = async (req, res) => {
+export const postUsuario = async (req, res) => {
   try {
     const { nombre, edad, fechanacimiento, email } = req.body
 
@@ -65,14 +59,12 @@ const postUsuario = async (req, res) => {
 }
 
 // Actualizar nombre
-const putUsuario = async (req, res) => {
+export const putUsuario = async (req, res) => {
   try {
     const { id } = req.params
     const { nombre } = req.body
 
-    const usuario = await Usuario.findByIdAndUpdate(
-      id,
-      { nombre },
+    const usuario = await Usuario.findByIdAndUpdate( id,{ nombre },
       { new: true }
     )
 
@@ -90,7 +82,7 @@ const putUsuario = async (req, res) => {
 }
 
 // Activar usuario
-const putUsuarioActivar = async (req, res) => {
+export const putUsuarioActivar = async (req, res) => {
   try {
     const { id } = req.params
 
@@ -111,7 +103,7 @@ const putUsuarioActivar = async (req, res) => {
 }
 
 // Inactivar usuario
-const putUsuarioInactivar = async (req, res) => {
+export const putUsuarioInactivar = async (req, res) => {
   try {
     const { id } = req.params
 
@@ -132,7 +124,7 @@ const putUsuarioInactivar = async (req, res) => {
 }
 
 // Eliminar usuario
-const deleteUsuario = async (req, res) => {
+export const deleteUsuario = async (req, res) => {
   try {
     const { id } = req.params
 
@@ -148,12 +140,4 @@ const deleteUsuario = async (req, res) => {
   }
 }
 
-export {
-  getUsuario,
-  getUsuarioEmail,
-  postUsuario,
-  putUsuario,
-  putUsuarioActivar,
-  putUsuarioInactivar,
-  deleteUsuario
-}
+
