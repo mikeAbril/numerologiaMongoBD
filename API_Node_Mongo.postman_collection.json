@@ -140,9 +140,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/pago",
+              "raw": "{{baseUrl}}/pagos",
               "host": ["{{baseUrl}}"],
-              "path": ["pago"]
+              "path": ["pagos"]
             }
           }
         },
@@ -151,9 +151,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/pago/{{pagoId}}",
+              "raw": "{{baseUrl}}/pagos/{{pagoId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["pago", "{{pagoId}}"]
+              "path": ["pagos", "{{pagoId}}"]
             }
           }
         },
@@ -169,12 +169,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"monto\": 100\n}"
+              "raw": "{\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"monto\": 50000,\n  \"tipo\": \"transferencia\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/pago",
+              "raw": "{{baseUrl}}/pagos",
               "host": ["{{baseUrl}}"],
-              "path": ["pago"]
+              "path": ["pagos"]
             }
           }
         },
@@ -183,9 +183,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/pago/estado/{{usuarioId}}",
+              "raw": "{{baseUrl}}/pagos/estado/{{usuarioId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["pago", "estado", "{{usuarioId}}"]
+              "path": ["pagos", "estado", "{{usuarioId}}"]
             }
           }
         },
@@ -194,9 +194,9 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{baseUrl}}/pago/{{pagoId}}",
+              "raw": "{{baseUrl}}/pagos/{{pagoId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["pago", "{{pagoId}}"]
+              "path": ["pagos", "{{pagoId}}"]
             }
           }
         }

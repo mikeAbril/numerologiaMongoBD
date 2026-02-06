@@ -61,10 +61,6 @@ function calcularCaminoDeVida(fecha_nacimiento) {
 }
 
 
-
-
-
-
 export async function generarlecturaPrincipal(req, res) {
   try {
     const { usuarioId } = req.params;
@@ -81,7 +77,7 @@ export async function generarlecturaPrincipal(req, res) {
     if (resultado.lecturaExistente) {
       return res.status(200).json({
         msg: "Lectura principal ya generada",
-        id: resultado.lecturaExistente.Id,
+        id: resultado.lecturaExistente.id,
         contenido: JSON.parse(resultado.lecturaExistente.contenido),
       });
     }
@@ -112,7 +108,7 @@ Devuelve ÚNICAMENTE un JSON válido con nombre, numeroCamino, descripcion, tale
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error interno" });
+    res.status(500).json({ msg: "Error interno"});
   }
 }
 
@@ -138,7 +134,7 @@ export async function generarlecturadiaria(req, res) {
     if (lecturaHoy) {
       return res.status(200).json({
         msg: "Lectura diaria ya generada hoy",
-        id: lecturaHoy.Id,
+        id: lecturaHoy.id,
         contenido: JSON.parse(lecturaHoy.contenido),
       });
     }

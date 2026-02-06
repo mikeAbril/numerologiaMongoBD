@@ -1,52 +1,51 @@
 import mongoose from "mongoose";
 
-const pago = new mongoose.Schema({
-    usuarioId:{
-        type: String,
-        require: true
-    },
-
-    monto: {
-        type: Number,
-        require: true
-    },
-
-    fecha:{
-        type: Date,
-        default: Date.now
-    },
-    descripcio: {
-        type: String,
-        default: ""
-    }
+const pagoSchema = new mongoose.Schema({
+  usuarioId: {
+    type: String,
+    required: true
+  },
+  monto: {
+    type: Number,
+    required: true
+  },
+  fecha: {
+    type: Date,
+    default: Date.now
+  },
+  tipo: {
+    type: String,
+    enum: ["efectivo", "transferencia", "tarjeta"],
+    required: true
+  }
 });
 
-const pagos = mongoose.model("pagos",pago);
+const Pago = mongoose.model("pagos", pagoSchema);
 
-export default pagos;
+export default Pago;
 
-export const obtenerPagos = async ()=> {
-    return await pagos.find();
+
+export const obtenerPagos = async () => {
+  return await Pago.find();
 };
 
-
 export const obtenerPagosUsuario = async (idUsuario) => {
-  return await pagos.find({ usuarioId: idUsuario });
+  return await Pago.find({ usuarioId: idUsuario });
 };
 
 export const registrarPago = async (data) => {
-  const pago = new pagos(data);
-  return await pagos.save();
+  const nuevoPago = new Pago(data);
+  return await nuevoPago.save();
 };
 
 export const eliminarPago = async (id) => {
-  return await pagos.findByIdAndDelete(id);
+  return await Pago.findByIdAndDelete(id);
 };
 
 export const verificarEstadoUsuario = async (idUsuario) => {
-  const tienePagos = await pagos.exists({ usuarioId: idUsuario });
+  const tienePagos = await Pago.exists({ usuarioId: idUsuario });
   return {
     usuarioId: idUsuario,
     estado: tienePagos ? "Activo" : "Sin pagos"
   };
-}
+};
