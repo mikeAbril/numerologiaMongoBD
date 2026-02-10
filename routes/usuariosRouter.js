@@ -12,6 +12,7 @@ import {
 
 import { validarCampos } from "../middlewares/validarCampos.js"
 import { validarUsuarioActivoMiddleware } from "../middlewares/validarUsuario.js";
+import { validarJWT } from "../middlewares/validar-jwt.js";
 
 import {
     validarEmail,
@@ -56,6 +57,7 @@ router.post(
 router.put(
   "/:id",
   [
+    validarJWT,
     check("id", "ID inválido").isMongoId(),
     check("id").custom(validarExisteUsuario),
 
@@ -70,6 +72,7 @@ router.put(
 router.put(
   "/activar/:id",
   [
+    validarJWT,
     check("id", "ID inválido").isMongoId(),
     check("id").custom(validarExisteUsuario),
     validarCampos,
