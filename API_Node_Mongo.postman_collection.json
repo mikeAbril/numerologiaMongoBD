@@ -1,41 +1,39 @@
 {
   "info": {
     "_postman_id": "9f5d2f21-8f8b-4f65-ae5d-9a5e3c1b1234",
-    "name": "API Numerología - NodeJS MongoDB",
-    "description": "Colección de endpoints para Usuarios, Pagos y Lecturas (Express + MongoDB)",
+    "name": "API Numerología ",
+    "description": "Colección completa con Registro (bcrypt) y Login funcional.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3000/api"
-    },
-    {
-      "key": "usuarioId",
-      "value": ""
-    },
-    {
-      "key": "pagoId",
-      "value": ""
-    },
-    {
-      "key": "lecturaId",
-      "value": ""
-    }
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "usuarioId", "value": "" },
+    { "key": "pagoId", "value": "" },
+    { "key": "lecturaId", "value": "" }
   ],
   "item": [
     {
       "name": "Usuarios",
       "item": [
         {
+          "name": "Login de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@email.com\",\n  \"password\": \"seguridad1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/login", "host": ["{{baseUrl}}"], "path": ["login"] }
+          }
+        },
+        {
           "name": "Listar usuarios",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/usuario",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario", "host": ["{{baseUrl}}"], "path": ["usuario"] }
           }
         },
         {
@@ -46,12 +44,7 @@
               "raw": "{{baseUrl}}/usuario/email?email=usuario@email.com",
               "host": ["{{baseUrl}}"],
               "path": ["usuario", "email"],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "usuario@email.com"
-                }
-              ]
+              "query": [{ "key": "email", "value": "usuario@email.com" }]
             }
           }
         },
@@ -60,20 +53,13 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"edad\": 30,\n  \"fechanacimiento\": \"1994-01-29\",\n  \"email\": \"juan@email.com\"\n}"
+              "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"edad\": 30,\n  \"fechanacimiento\": \"1994-01-29\",\n  \"email\": \"juan@email.com\",\n  \"password\": \"seguridad1234\",\n  \"rol\": \"usuario\"\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/usuario",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario", "host": ["{{baseUrl}}"], "path": ["usuario"] }
           }
         },
         {
@@ -81,53 +67,34 @@
           "request": {
             "method": "PUT",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Juan Actualizado\"\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/usuario/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario", "{{usuarioId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["usuario", "{{usuarioId}}"] }
           }
         },
         {
           "name": "Activar usuario",
           "request": {
             "method": "PUT",
-            "url": {
-              "raw": "{{baseUrl}}/usuario/activar/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario", "activar", "{{usuarioId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario/activar/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["usuario", "activar", "{{usuarioId}}"] }
           }
         },
         {
           "name": "Inactivar usuario",
           "request": {
             "method": "PUT",
-            "url": {
-              "raw": "{{baseUrl}}/usuario/inactivar/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario", "inactivar", "{{usuarioId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario/inactivar/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["usuario", "inactivar", "{{usuarioId}}"] }
           }
         },
         {
           "name": "Eliminar usuario",
           "request": {
             "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/usuario/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["usuario", "{{usuarioId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/usuario/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["usuario", "{{usuarioId}}"] }
           }
         }
       ]
@@ -139,22 +106,14 @@
           "name": "Listar pagos",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/pagos",
-              "host": ["{{baseUrl}}"],
-              "path": ["pagos"]
-            }
+            "url": { "raw": "{{baseUrl}}/pagos", "host": ["{{baseUrl}}"], "path": ["pagos"] }
           }
         },
         {
           "name": "Obtener pago por ID",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/pagos/{{pagoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["pagos", "{{pagoId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/pagos/{{pagoId}}", "host": ["{{baseUrl}}"], "path": ["pagos", "{{pagoId}}"] }
           }
         },
         {
@@ -162,42 +121,13 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"monto\": 50000,\n  \"tipo\": \"transferencia\"\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/pagos",
-              "host": ["{{baseUrl}}"],
-              "path": ["pagos"]
-            }
-          }
-        },
-        {
-          "name": "Estado de pago del usuario",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/pagos/estado/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["pagos", "estado", "{{usuarioId}}"]
-            }
-          }
-        },
-        {
-          "name": "Eliminar pago",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/pagos/{{pagoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["pagos", "{{pagoId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/pagos", "host": ["{{baseUrl}}"], "path": ["pagos"] }
           }
         }
       ]
@@ -209,44 +139,7 @@
           "name": "Generar lectura principal",
           "request": {
             "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/lectura/principal/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["lectura", "principal", "{{usuarioId}}"]
-            }
-          }
-        },
-        {
-          "name": "Generar lectura diaria",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/lectura/diaria/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["lectura", "diaria", "{{usuarioId}}"]
-            }
-          }
-        },
-        {
-          "name": "Obtener lecturas de un usuario",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/lectura/{{usuarioId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["lectura", "{{usuarioId}}"]
-            }
-          }
-        },
-        {
-          "name": "Obtener lectura por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/lectura/{{lecturaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["lectura", "{{lecturaId}}"]
-            }
+            "url": { "raw": "{{baseUrl}}/lectura/principal/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["lectura", "principal", "{{usuarioId}}"] }
           }
         }
       ]

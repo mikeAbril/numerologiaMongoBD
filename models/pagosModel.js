@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const pagoSchema = new mongoose.Schema({
-  usuarioId: {
-    type: String,
-    required: true
-  },
   monto: {
     type: Number,
     required: true

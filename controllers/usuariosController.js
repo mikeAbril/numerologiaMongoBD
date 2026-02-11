@@ -1,4 +1,5 @@
 import Usuario from "../models/usuariosModel.js"
+import bcryptjs from "bcryptjs"
 
 // Obtener todos los usuarios
 export const getUsuario = async (req, res) => {
@@ -28,10 +29,10 @@ export const getUsuarioEmail = async (req, res) => {
 // Crear usuario
 export const postUsuario = async (req, res) => {
   try {
-    const { nombre, edad, fechanacimiento, email } = req.body
+    const { nombre, edad, fechanacimiento, email, password} = req.body
 
-    if (!nombre || !email) {
-      return res.status(400).json({ msg: "Nombre y email son obligatorios" })
+    if (!nombre || !email || !password) {
+      return res.status(400).json({ msg: "Nombre, email y passoword son obligatorios" })
     }
 
     const existeUsuario = await Usuario.findOne({ email })
@@ -44,10 +45,18 @@ export const postUsuario = async (req, res) => {
       edad,
       fechanacimiento,
       email,
-      estado: true
-    })
+      password,
+      estado: 0
+    });
+  
 
-    await usuario.save()
+    const salt = bcryptjs.genSaltSync(10); // esto es la semilla
+    usuario.password = bcryptjs.hashSync(password, salt) // esto convierto el texto en hash 
+
+    await usuario.save();
+
+    const usuarioValido = usuario.toObject();
+    delete usuarioValido.password;
 
     res.status(201).json({
       msg: "Usuario creado correctamente",
@@ -88,7 +97,7 @@ export const putUsuarioActivar = async (req, res) => {
 
     const usuario = await Usuario.findByIdAndUpdate(
       id,
-      { estado: true },
+      { estado: 1 },
       { new: true }
     )
 
@@ -109,7 +118,7 @@ export const putUsuarioInactivar = async (req, res) => {
 
     const usuario = await Usuario.findByIdAndUpdate(
       id,
-      { estado: false },
+      { estado: 2 },
       { new: true }
     )
 

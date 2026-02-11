@@ -5,6 +5,7 @@ import {
   eliminarPago,
   verificarEstadoUsuario
 } from "../models/pagosModel.js"
+import Usuario from "../models/usuariosModel.js"; 
 
 export const getPagos = async (req, res) => {
   try {
@@ -31,9 +32,26 @@ export const getPagoUsuario = async (req, res) => {
 export const postNuevoPago = async (req, res) => {
   try {
     const nuevoPago = await registrarPago(req.body);
-    res.status(201).json(nuevoPago);
+    const {usuarioId} = req.body
+
+    const usuarioActivo = await Usuario.findByIdAndUpdate(
+      usuarioId,
+      {estado : 1},
+      {new: true}
+    )
+
+   res.status(201).json({
+    msg : "Pago registrado correctamente y cuenta activada",
+    pago : nuevoPago,
+    Usuario : {
+      id : usuarioActivo?._id,
+      nombre : usuarioActivo?.nombre,
+      estado : usuarioActivo?.estado
+    }
+   });
+   
   } catch (error) {
-    res.status(400).json({ error: "Error al registrar el pago" });
+    res.status(400).json({ error: "Error al registrar el pago y activar usuario" });
   }
 };
 

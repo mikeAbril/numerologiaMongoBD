@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import Usuario from "../models/usuariosModel.js";
+
 const generarJWT = (uid) => {
     return new Promise((resolve, reject) => {
         const payload = { uid };
@@ -14,7 +17,7 @@ const generarJWT = (uid) => {
     })
 }
 
-
+// validar token, esto hace que las rutas se protegan
 const validarJWT = async (req, res, next) =>{
     const token = req.header("x-token");
     if(!token){
@@ -24,7 +27,7 @@ const validarJWT = async (req, res, next) =>{
     }try {
         const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY)
 
-        let usuario = await Holder.findById(uid);
+        let usuario = await Usuario.findById(uid);
 
         if(!usuario){
             return res.status(401).json({
