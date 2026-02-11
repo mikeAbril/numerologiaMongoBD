@@ -1,34 +1,38 @@
 {
   "info": {
     "_postman_id": "9f5d2f21-8f8b-4f65-ae5d-9a5e3c1b1234",
-    "name": "API Numerología ",
-    "description": "Colección completa con Registro (bcrypt) y Login funcional.",
+    "name": "API Numerología",
+    "description": "Colección completa con todas las rutas de Express y formato compatible de URL.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000/api" },
     { "key": "usuarioId", "value": "" },
+    { "key": "token", "value": "" },
     { "key": "pagoId", "value": "" },
     { "key": "lecturaId", "value": "" }
   ],
   "item": [
     {
-      "name": "Usuarios",
+      "name": "Login",
       "item": [
         {
           "name": "Login de Usuario",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"juan@email.com\",\n  \"password\": \"seguridad1234\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/login", "host": ["{{baseUrl}}"], "path": ["login"] }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
         {
           "name": "Listar usuarios",
           "request": {
@@ -40,11 +44,11 @@
           "name": "Obtener usuario por email",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/usuario/email?email=usuario@email.com",
-              "host": ["{{baseUrl}}"],
+            "url": { 
+              "raw": "{{baseUrl}}/usuario/email?email=juan@email.com", 
+              "host": ["{{baseUrl}}"], 
               "path": ["usuario", "email"],
-              "query": [{ "key": "email", "value": "usuario@email.com" }]
+              "query": [{ "key": "email", "value": "juan@email.com" }]
             }
           }
         },
@@ -52,9 +56,7 @@
           "name": "Crear usuario",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"edad\": 30,\n  \"fechanacimiento\": \"1994-01-29\",\n  \"email\": \"juan@email.com\",\n  \"password\": \"seguridad1234\",\n  \"rol\": \"usuario\"\n}"
@@ -67,7 +69,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-token", "value": "{{token}}" }
             ],
             "body": {
               "mode": "raw",
@@ -80,6 +83,7 @@
           "name": "Activar usuario",
           "request": {
             "method": "PUT",
+            "header": [{ "key": "x-token", "value": "{{token}}" }],
             "url": { "raw": "{{baseUrl}}/usuario/activar/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["usuario", "activar", "{{usuarioId}}"] }
           }
         },
@@ -103,31 +107,43 @@
       "name": "Pagos",
       "item": [
         {
-          "name": "Listar pagos",
+          "name": "Listar todos los pagos",
           "request": {
             "method": "GET",
             "url": { "raw": "{{baseUrl}}/pagos", "host": ["{{baseUrl}}"], "path": ["pagos"] }
           }
         },
         {
-          "name": "Obtener pago por ID",
+          "name": "Obtener pago por ID usuario",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/pagos/{{pagoId}}", "host": ["{{baseUrl}}"], "path": ["pagos", "{{pagoId}}"] }
+            "url": { "raw": "{{baseUrl}}/pagos/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["pagos", "{{usuarioId}}"] }
+          }
+        },
+        {
+          "name": "Obtener estado de suscripción",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/pagos/estado/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["pagos", "estado", "{{usuarioId}}"] }
           }
         },
         {
           "name": "Registrar nuevo pago",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"monto\": 50000,\n  \"tipo\": \"transferencia\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/pagos", "host": ["{{baseUrl}}"], "path": ["pagos"] }
+          }
+        },
+        {
+          "name": "Eliminar pago",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/pagos/{{pagoId}}", "host": ["{{baseUrl}}"], "path": ["pagos", "{{pagoId}}"] }
           }
         }
       ]
@@ -140,6 +156,27 @@
           "request": {
             "method": "POST",
             "url": { "raw": "{{baseUrl}}/lectura/principal/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["lectura", "principal", "{{usuarioId}}"] }
+          }
+        },
+        {
+          "name": "Generar lectura diaria",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/lectura/diaria/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["lectura", "diaria", "{{usuarioId}}"] }
+          }
+        },
+        {
+          "name": "Obtener historial de usuario",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/lectura/{{usuarioId}}", "host": ["{{baseUrl}}"], "path": ["lectura", "{{usuarioId}}"] }
+          }
+        },
+        {
+          "name": "Obtener lectura por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/lectura/{{lecturaId}}", "host": ["{{baseUrl}}"], "path": ["lectura", "{{lecturaId}}"] }
           }
         }
       ]

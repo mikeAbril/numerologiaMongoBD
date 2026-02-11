@@ -69,11 +69,7 @@ export async function generarlecturaPrincipal(req, res) {
     if (!resultado.usuario) {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
-    if (resultado.usuario.estado !== 1) {
-      return res.status(403).json({
-        msg: "Usuario no activo. No puede generar lectura.",
-      });
-    }
+
     if (resultado.lecturaExistente) {
       return res.status(200).json({
         msg: "Lectura principal ya generada",
@@ -87,10 +83,16 @@ export async function generarlecturaPrincipal(req, res) {
     );
 
     const prompt = `
-Eres un numerólogo profesional experto en numerología pitagórica. 
-Usa este número de Camino de Vida ya calculado: ${numeroCamino}.
-Devuelve ÚNICAMENTE un JSON válido con nombre, numeroCamino, descripcion, talentos, desafios, mensajeEspiritual.
-`;
+     Eres un numerólogo místico y profesional. 
+      Usa este número de Camino de Vida: ${numeroCamino}.
+      Instrucciones:
+      1. Da una descripción breve y muy acertada.
+      2. Menciona un talento oculto.
+      3. En 'mensajeEspiritual', da una revelación impactante pero déjala incompleta. 
+         Dile que hay un evento importante acercándose en su destino que solo su lectura diaria puede revelar.
+      4. Crea intriga y suspenso.
+      Devuelve ÚNICAMENTE un JSON válido con nombre, numeroCamino, descripcion, talentos, mensajeEspiritual.
+    `;
 
     const contenidoIA = await respuestaIA(prompt);
     const contenidoJSON = extraerJSON(contenidoIA);
@@ -102,13 +104,13 @@ Devuelve ÚNICAMENTE un JSON válido con nombre, numeroCamino, descripcion, tale
     );
 
     res.status(201).json({
-      msg: "Lectura principal generada",
+      msg: "Tu prueba gratuita está lista. El destino tiene algo más para ti...",
       id: idLectura,
       contenido: contenidoJSON,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error interno"});
+    res.status(500).json({ msg: "Error interno" });
   }
 }
 
@@ -120,32 +122,32 @@ export async function generarlecturadiaria(req, res) {
     if (!resultado.usuario) {
       return res.status(404).json({ msg: "Usuario no encontrado." });
     }
+
     if (resultado.usuario.estado !== 1) {
-      return res.status(403).json({ msg: "Usuario no activo." });
+      return res.status(403).json({ 
+        msg: "Acceso denegado. La lectura diaria es exclusiva para suscriptores activos. ¡Suscríbete para revelar tu destino diario!" 
+      });
     }
 
-    const lecturaPrincipal =
-      await resultado.obtenerLecturaPrincipal(usuarioId);
-    if (!lecturaPrincipal) {
-      return res.status(400).json({ msg: "Primero genera lectura principal." });
+    const lecturaP = await resultado.obtenerLecturaPrincipal(usuarioId);
+    if (!lecturaP) {
+      return res.status(400).json({ msg: "Primero genera tu lectura principal gratuita." });
     }
 
     const lecturaHoy = await resultado.obtenerLecturaDiariaHoy(usuarioId);
     if (lecturaHoy) {
       return res.status(200).json({
-        msg: "Lectura diaria ya generada hoy",
+        msg: "Tu guía de hoy ya está disponible",
         id: lecturaHoy.id,
         contenido: JSON.parse(lecturaHoy.contenido),
       });
     }
 
-    const fechaHoy = new Date().toISOString().split("T")[0];
-
     const prompt = `
-Genera lectura diaria basada en esta lectura principal:
-${lecturaPrincipal.contenido}
-Devuelve SOLO un JSON válido con fecha, mensaje, energiaDelDia, consejo
-`;
+      Genera una lectura diaria profunda basada en esta base: ${lecturaP.contenido}.
+      Sé muy específico con la energía de hoy.
+      Devuelve SOLO un JSON válido con fecha del día que se genera la lectura, mensaje, energiaDelDia, consejo.
+    `;
 
     const contenidoIA = await respuestaIA(prompt);
     const contenidoJSON = extraerJSON(contenidoIA);
@@ -153,11 +155,11 @@ Devuelve SOLO un JSON válido con fecha, mensaje, energiaDelDia, consejo
     const idLectura = await resultado.crear(
       usuarioId,
       "diaria",
-      JSON.stringify(contenidoJSON),
+      JSON.stringify(contenidoJSON)
     );
 
     res.status(201).json({
-      msg: "Lectura diaria generada",
+      msg: "Lectura diaria generada con éxito",
       id: idLectura,
       contenido: contenidoJSON,
     });
@@ -166,7 +168,6 @@ Devuelve SOLO un JSON válido con fecha, mensaje, energiaDelDia, consejo
     res.status(500).json({ msg: "Error interno" });
   }
 }
-
 export async function obtenerlecturasdeunusuario(req, res) {
   try {
     const { usuarioId } = req.params;
@@ -199,7 +200,7 @@ export async function obtenerlecturaporid(req, res) {
         typeof lectura.contenido === "string"
           ? JSON.parse(lectura.contenido)
           : lectura.contenido;
-    } catch {}
+    } catch { }
 
     res.status(200).json({
       msg: "Lectura encontrada",

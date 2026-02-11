@@ -21,42 +21,49 @@ const Lecturas = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false}
 );
 const Lectura = mongoose.model("Lectura", Lecturas);
 
 export default Lectura;
 
 export const lecturaPrincipal = async (idUsuario) => {
-  const lecturaExistente = await Lectura.findOne({
-    usuarioId: idUsuario,
-    tipo: "principal",
-  });
+  try {
+    const usuario = await Usuario.findById(idUsuario);
+    
+    const lecturaExistente = await Lectura.findOne({
+      usuarioId: idUsuario,
+      tipo: "principal",
+    });
 
-  const usuario = await Usuario.findById(idUsuario);
+    return {
+      usuario,
+      lecturaExistente,
+      
+      crear: async (usuarioId, tipo, contenido) => {
+        const nueva = await Lectura.create({ usuarioId, tipo, contenido });
+        return nueva._id;
+      },
+      
+      obtenerLecturaPrincipal: async (uid) => {
+        return await Lectura.findOne({ usuarioId: uid, tipo: "principal" });
+      },
+     
+      obtenerLecturaDiariaHoy: async (uid) => {
+        const hoy = new Date();
+        const inicioDia = new Date(hoy.setHours(0, 0, 0, 0));
+        const finDia = new Date(hoy.setHours(23, 59, 59, 999));
 
-  return {
-    usuario,
-    lecturaExistente,
-    crear: async (usuarioId, tipo, contenido) => {
-      const nueva = await Lectura.create({ usuarioId, tipo, contenido });
-      return nueva._id;
-    },
-    obtenerLecturaPrincipal: async (usuarioId) => {
-      return await Lectura.findOne({ usuarioId, tipo: "principal" });
-    },
-    obtenerLecturaDiariaHoy: async (usuarioId) => {
-      const hoy = new Date();
-      const inicioDia = new Date(hoy.setHours(0, 0, 0, 0));
-      const finDia = new Date(hoy.setHours(23, 59, 59, 999));
-
-      return await Lectura.findOne({
-        usuarioId,
-        tipo: "diaria",
-        fechaLectura: { $gte: inicioDia, $lte: finDia },
-      });
-    },
-  };
+        return await Lectura.findOne({
+          usuarioId: uid,
+          tipo: "diaria",
+          fechaLectura: { $gte: inicioDia, $lte: finDia },
+        });
+      },
+    };
+  } catch (error) {
+    throw new Error("Error en el modelo de lecturas: " + error.message);
+  }
 };
 
 export const lecturaDiaria = lecturaPrincipal;
