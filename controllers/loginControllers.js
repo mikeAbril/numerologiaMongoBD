@@ -4,7 +4,9 @@ import { generarJWT } from "../middlewares/validar-jwt.js";
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
-
+    console.log(email);
+    console.log("pass "+password);
+    
     try {
         const usuario = await Usuario.findOne({ email });
     
