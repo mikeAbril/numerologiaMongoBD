@@ -7,7 +7,7 @@
         email:{type:String,unique:true, required: true},
         estado:{type:Number,default:0},
         password: { type: String, required: true, minlength: 8, maxlength: 100 },
-        rol: {type:String, emun:["admin","usuario"], default:"usuario"} 
+        rol: {type:String, required: true, default:'admin',enum:['admin','user','other_role']} 
     });
 
     export default mongoose.model("Usuario",usuario)

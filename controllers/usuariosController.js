@@ -1,5 +1,6 @@
 import Usuario from "../models/usuariosModel.js"
 import bcryptjs from "bcryptjs"
+import { sendEmail } from "../helpers/sendEmail.js"
 
 // Obtener todos los usuarios
 export const getUsuario = async (req, res) => {
@@ -29,7 +30,7 @@ export const getUsuarioEmail = async (req, res) => {
 // Crear usuario
 export const postUsuario = async (req, res) => {
   try {
-    const { nombre, edad, fechanacimiento, email, password} = req.body
+    const { nombre, edad, fechanacimiento, email, password,rol} = req.body
 
     if (!nombre || !email || !password) {
       return res.status(400).json({ msg: "Nombre, email y passoword son obligatorios" })
@@ -46,14 +47,25 @@ export const postUsuario = async (req, res) => {
       fechanacimiento,
       email,
       password,
+      rol,
       estado: 0
     });
   
-
+// Esto es para encriptar 
     const salt = bcryptjs.genSaltSync(10); // esto es la semilla
     usuario.password = bcryptjs.hashSync(password, salt) // esto convierto el texto en hash 
 
     await usuario.save();
+
+    try {
+      await sendEmail(
+        email,
+        "Bienvenido a Numerologia",`Hola${nombre}, tu cuenta ha sido creada con éxito, !Gracias por unirte¡`
+      );
+    } catch (mailError) {
+      console.log("Error al enviar el correo de bienvenida",mailError);
+      
+    }
 
     const usuarioValido = usuario.toObject();
     delete usuarioValido.password;

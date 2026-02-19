@@ -25,3 +25,11 @@ export const validarUsuarioActivo = async (id) => {
         throw new Error(`El usuario ${id} está inactivo`);
     }
 }
+
+export const validaRol = async (rol = '') =>{
+    const rolesValidos = ['admin', 'user', 'other_role'];
+    
+    if(!rolesValidos.includes(rol)){
+        throw new Error(`El rol ${rol} no es valido. Roles válidos: ${rolesValidos}`)
+    }
+}
