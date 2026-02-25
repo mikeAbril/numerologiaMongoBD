@@ -30,7 +30,7 @@
       "key": "geminiApiKey",
       "value": "AIzaSyBrV35VVd4LvTaD61Gt5KlkilpDiW7Z2d4"
     },
-     {
+    {
       "key": "token",
       "value": ""
     }
@@ -47,27 +47,26 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              }     
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"juan@email.com\",\n  \"password\": \"seguridad1234\"\n}"
             },
-            "event":[
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const response = pm.response.json();",
-                      "if(response.token){",
-                      "pm.environment.set(\"token\",response.token);",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "const response = pm.response.json();",
+                    "if(response.token){",
+                    "pm.environment.set(\"token\",response.token);",
+                    "}"
+                  ],
+                  "type": "text/javascript"
                 }
-              ],
-              
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/login",
               "host": [
@@ -81,26 +80,54 @@
         },
         {
           "name": "Olvidé mi contraseña",
-          "request":{
-            "method":"POST",
-            "header":[{"key": "Content-Type", "value": "application/json"}],
-            "body":{
-              "mode":"raw",
-              "raw":"{\n\"email\": \"juan@gemail.com\"\n}"
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"email\": \"juan@gemail.com\"\n}"
             },
-            "url":{ "raw": "{{baseUrl}}/login/forgot-password", "host": ["{{baseUrl}}"], "path": ["login", "forgot-password"]}
+            "url": {
+              "raw": "{{baseUrl}}/login/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login",
+                "forgot-password"
+              ]
+            }
           }
         },
         {
           "name": "Resetear contraseña",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"token\": \"TOKEN_RECIBIDO_POR_EMAIL\",\n  \"newPassword\": \"nuevaContrasena123\"\n}"
+              "raw": "{\n  \"token\": \"AQUÍ_EL_CÓDIGO_DE_6_DÍGITOS\",\n  \"newPassword\": \"tuNuevaClave123\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/login/reset-password", "host": ["{{baseUrl}}"], "path": ["login", "reset-password"] }
+            "url": {
+              "raw": "{{baseUrl}}/login/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login",
+                "reset-password"
+              ]
+            }
           }
         }
       ]
@@ -112,7 +139,7 @@
           "name": "Listar usuarios",
           "request": {
             "method": "GET",
-            "header":[
+            "header": [
               {
                 "key": "x-token",
                 "value": "{{token}}"
@@ -133,7 +160,7 @@
           "name": "Obtener usuario por email",
           "request": {
             "method": "GET",
-            "header":[
+            "header": [
               {
                 "key": "x-token",
                 "value": "{{token}}"
@@ -180,7 +207,6 @@
                 "usuario"
               ]
             }
-
           }
         },
         {
@@ -253,7 +279,7 @@
           "name": "Eliminar usuario",
           "request": {
             "method": "DELETE",
-            "header":[
+            "header": [
               {
                 "key": "x-token",
                 "value": "{{token}}"
@@ -280,7 +306,7 @@
           "name": "Listar todos los pagos",
           "request": {
             "method": "GET",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/pagos",
               "host": [
@@ -296,7 +322,7 @@
           "name": "Obtener pago por ID usuario",
           "request": {
             "method": "GET",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/pagos/{{usuarioId}}",
               "host": [
@@ -336,7 +362,7 @@
                 "value": "application/json"
               },
               {
-                "key":"geminiApiKey",
+                "key": "geminiApiKey",
                 "value": "{{geminiApikey}}"
               }
             ],
@@ -359,7 +385,7 @@
           "name": "Eliminar pago",
           "request": {
             "method": "DELETE",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/pagos/{{pagoId}}",
               "host": [
@@ -381,7 +407,7 @@
           "name": "Generar lectura principal",
           "request": {
             "method": "POST",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/lectura/principal/{{usuarioId}}",
               "host": [
@@ -399,7 +425,7 @@
           "name": "Generar lectura diaria",
           "request": {
             "method": "POST",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/lectura/diaria/{{usuarioId}}",
               "host": [
@@ -417,7 +443,7 @@
           "name": "Obtener historial de usuario",
           "request": {
             "method": "GET",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/lectura/{{usuarioId}}",
               "host": [
@@ -434,7 +460,7 @@
           "name": "Obtener lectura por ID",
           "request": {
             "method": "GET",
-            "header":[],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/lectura/{{lecturaId}}",
               "host": [

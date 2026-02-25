@@ -1,11 +1,11 @@
 import { text } from 'express';
 import nodemailer from 'nodemailer'
 
-let trasnporter = null;
+let transporter = null;
 
-const getTrasporter = () => {
-    if (!trasnporter) {
-        trasnporter = nodemailer.createTransport({
+const getTransporter = () => {
+    if (!transporter) {
+        transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
@@ -13,13 +13,13 @@ const getTrasporter = () => {
             }
         });
     }
-    return trasnporter;
+    return transporter;
 };
 
 
 export const sendEmail = async (to, subject, content) => {
     const mailOptions = {
-        from: `"NUMEROLOGIA" <${process.env.EMAIL_USER}`,
+        from: `"NUMEROLOGIA" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         text: content,
@@ -35,7 +35,7 @@ export const sendEmail = async (to, subject, content) => {
     };
 
     try {
-        const info = await getTrasporter().sendEmail(mailOptions);
+        const info = await getTransporter().sendMail(mailOptions);
         console.log('✅ Correo enviado con éxito;', info.response);
         
     } catch (error) {
@@ -47,7 +47,7 @@ export const sendEmail = async (to, subject, content) => {
 
 export const sendResetCode = async (email, code) =>{
     try {
-        await getTrasporter().sendEmail({
+        await getTransporter().sendMail({
             from: `"Numerologia Soporte"<${process.env.EMAIL_USER}>`,
             to: email,
             subject: "Código de recuperación de contraseña",
