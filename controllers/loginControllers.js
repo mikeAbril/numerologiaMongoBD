@@ -4,22 +4,25 @@ import generarJWT from "../helpers/generar-jwt.js";
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(email);
+    console.log(password);
     
     try {
         const usuario = await Usuario.findOne({ email });
     
         if (!usuario) {
             return res.status(400).json({
-                msg: "email no encontrado (Email)"
+                msg: "email no encontrado "+email
             });
         }
-   
+        console.log("usuario "+usuario);
+        
         const validPassword = bcryptjs.compareSync(password, usuario.password);
+        console.log("pass "+validPassword);
+        
         
         if (!validPassword) {
             return res.status(400).json({
-                msg: "contraseña incorrectos (Password)"
+                msg: "contraseña incorrectos "
             });
         }
 

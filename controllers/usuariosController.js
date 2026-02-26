@@ -31,7 +31,7 @@ export const getUsuarioEmail = async (req, res) => {
 // Crear usuario
 export const postUsuario = async (req, res) => {
   try {
-    const { nombre, edad, fechanacimiento, email, password, rol } = req.body
+    const { nombre, fechanacimiento, email, password, rol } = req.body
 
     if (!nombre || !email || !password) {
       return res.status(400).json({ msg: "Nombre, email y password son obligatorios" })
@@ -42,16 +42,16 @@ export const postUsuario = async (req, res) => {
       return res.status(409).json({ msg: "El usuario ya existe" })
     }
 
+
+
     const usuario = new Usuario({
       nombre,
-      edad,
       fechanacimiento,
       email,
       password,
       rol,
       estado: 0
     });
-
     // Esto es para encriptar 
     const salt = bcryptjs.genSaltSync(10); // esto es la semilla
     usuario.password = bcryptjs.hashSync(password, salt) // esto convierto el texto en hash 
@@ -178,13 +178,14 @@ export const forgotPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
+
     const { token, newPassword } = req.body;
-    if (!newPassword || newPassword.trim() === "") {
+    if (!newPassword ||  newPassword.trim() === "") {
       return res.status(400).json({ error: true, mensaje: "La nueva contraseña es obligatoria" });
     }
     const tokenBusqueda = String(token).trim();
     console.log("🔍 Buscando usuario con token:", tokenBusqueda);
-    
+
 
     const usuario = await Usuario.findOne({
       resetToken: tokenBusqueda,
