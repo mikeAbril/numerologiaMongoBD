@@ -9,7 +9,8 @@ import {
     putUsuarioActivar,
     putUsuarioInactivar,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    cambiarPassword
 } from "../controllers/usuariosController.js"
 
 import { validarCampos } from "../middlewares/validarCampos.js"
@@ -111,5 +112,6 @@ router.delete(
 );
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+router.put("/cambiar-password", validarJWT, cambiarPassword);
 
 export default router;

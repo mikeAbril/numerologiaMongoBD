@@ -8,7 +8,13 @@ const usuario = new mongoose.Schema({
     password: { type: String, required: true, minlength: 8, maxlength: 100 },
     rol: { type: String, required: true, default: 'user', enum: ['admin', 'user'] },
     resetToken: { type: String, default: null },
-    resetTokenExpire: { type: Date, default: null }
-});
+    resetTokenExpire: { type: Date, default: null },
+    suscripcionExpira: { type: Date, default: null },
+    prefsNotif: {
+        lectura: { type: Boolean, default: true },
+        password: { type: Boolean, default: true },
+        sistema: { type: Boolean, default: true }
+    }
+}, { timestamps: true });
 
 export default mongoose.model("Usuario", usuario)

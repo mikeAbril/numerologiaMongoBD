@@ -2,6 +2,7 @@ import Usuario from "../models/usuariosModel.js"
 import bcryptjs from "bcryptjs"
 import { sendEmail } from "../helpers/sendEmail.js"
 import { sendResetCode } from "../helpers/sendEmail.js"
+import { crearNotificacion } from "./notificacionesController.js"
 
 // Obtener todos los usuarios
 export const getUsuario = async (req, res) => {
@@ -204,10 +205,50 @@ export const resetPassword = async (req, res, next) => {
     usuario.resetTokenExpire = undefined;
     await usuario.save();
 
+    await crearNotificacion(
+      usuario._id,
+      "Seguridad: Contraseña Actualizada",
+      "Tu contraseña ha sido restablecida correctamente. Si no realizaste esta acción, contacta a soporte.",
+      "password"
+    );
+
     res.json({ error: false, mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {
     console.error("🔥 Error en resetPassword:", error);
     next(error);
+  }
+};
+
+export const cambiarPassword = async (req, res) => {
+  try {
+    const { id } = req.usuario;
+    const { passwordActual, passwordNueva } = req.body;
+
+    const usuario = await Usuario.findById(id);
+    if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
+
+    // Verificar password actual
+    const validPassword = bcryptjs.compareSync(passwordActual, usuario.password);
+    if (!validPassword) {
+      return res.status(400).json({ msg: "La contraseña actual es incorrecta" });
+    }
+
+    // Encriptar nueva password
+    const salt = bcryptjs.genSaltSync(10);
+    usuario.password = bcryptjs.hashSync(passwordNueva, salt);
+    await usuario.save();
+
+    await crearNotificacion(
+      usuario._id,
+      "Seguridad: Contraseña Cambiada",
+      "Has actualizado tu contraseña desde tu perfil.",
+      "password"
+    );
+
+    res.json({ msg: "Contraseña actualizada con éxito" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error al cambiar contraseña" });
   }
 };
 
