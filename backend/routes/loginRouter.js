@@ -5,7 +5,7 @@ import { validarCampos } from "../middlewares/validarCampos.js";
 import { forgotPassword, resetPassword } from "../controllers/usuariosController.js";
 const router = Router();
 
-router.post("/",
+router.post("/login",
     [
         check("email", "El fomato del correo es inválido").isEmail().notEmpty(),
         check("password", "La contraseña es obligatoria").notEmpty(),
@@ -13,8 +13,8 @@ router.post("/",
         validarCampos
     ], login)
 
-    router.post('/forgot-password', forgotPassword);
-    router.post('/reset-password', resetPassword);
+    router.post('/usuario/forgot-password', forgotPassword);
+    router.post('/usuario/reset-password', resetPassword);
 
 
 export default router;

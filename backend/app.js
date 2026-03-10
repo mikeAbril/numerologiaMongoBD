@@ -17,14 +17,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/usuario",usuariosRouter)
+app.use("/api", loginRouter);
 app.use("/api/lectura", lecturasRouter)
 app.use("/api/pagos", pagosRouter)
-app.use("/api/login", loginRouter);
 app.use("/api/notificaciones", notificacionesRouter);
 
 // Inicializar tareas programadas (Cron jobs)
 configurarTareasProgramadas();
 
-app.listen(process.env.PORT,()=>{
-    console.log(`👂Servidor escuchando en el puerto ${process.env.PORT}`);
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT,()=>{
+    console.log(`👂Servidor escuchando en el puerto ${PORT}`);
 })
