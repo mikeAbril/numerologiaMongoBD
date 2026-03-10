@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/usuario",usuariosRouter)
 app.use("/api/lectura", lecturasRouter)
 app.use("/api/pagos", pagosRouter)
-app.use("/api/login", loginRouter);
+app.use("/api", loginRouter);
 app.use("/api/notificaciones", notificacionesRouter);
 
 // Inicializar tareas programadas (Cron jobs)
