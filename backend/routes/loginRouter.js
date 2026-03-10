@@ -13,8 +13,8 @@ router.post("/login",
         validarCampos
     ], login)
 
-    router.post('/forgot-password', forgotPassword);
-    router.post('/reset-password', resetPassword);
+    router.post('/usuario/forgot-password', forgotPassword);
+    router.post('/usuario/reset-password', resetPassword);
 
 
 export default router;
