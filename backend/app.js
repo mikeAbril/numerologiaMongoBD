@@ -1,13 +1,13 @@
 import express from "express"
 import cors from "cors"
 import 'dotenv/config'
-import { conectarMongo } from "./database/cnx-mongo.js"
-import usuariosRouter from "./routes/usuariosRouter.js"
-import lecturasRouter from "./routes/lecturasRouter.js"
-import pagosRouter from "./routes/pagosRouter.js"
-import loginRouter from "./routes/loginRouter.js"
-import notificacionesRouter from "./routes/notificacionesRouter.js"
-import { configurarTareasProgramadas } from "./helpers/cron.js"
+import { conectarMongo } from "./src/database/cnx-mongo.js"
+import usuariosRouter from "./src/routes/usuariosRouter.js"
+import lecturasRouter from "./src/routes/lecturasRouter.js"
+import pagosRouter from "./src/routes/pagosRouter.js"
+import loginRouter from "./src/routes/loginRouter.js"
+import notificacionesRouter from "./src/routes/notificacionesRouter.js"
+import { configurarTareasProgramadas } from "./src/helpers/cron.js"
 
 const app =express()
 conectarMongo()

@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const pagoSchema = new mongoose.Schema({
+  usuarioId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario',
+    required: true
+  },
   monto: {
     type: Number,
     required: true
@@ -11,8 +16,16 @@ const pagoSchema = new mongoose.Schema({
   },
   tipo: {
     type: String,
-    enum: ["efectivo", "transferencia", "tarjeta"],
+    enum: ["efectivo", "transferencia", "tarjeta", "mercadopago"],
     required: true
+  },
+  preferenceId: {
+    type: String
+  },
+  status: {
+    type: String,
+    enum: ["pending", "approved", "rejected", "cancelled"],
+    default: "pending"
   }
 });
 

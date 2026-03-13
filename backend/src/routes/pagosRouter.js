@@ -6,6 +6,8 @@ import {
     postNuevoPago,
     deletePago,
     getEstadoUsuario,
+    createPreference,
+    recibirWebhook
 }from "../controllers/pagosController.js"
 
 import { validarCampos } from "../middlewares/validarCampos.js";
@@ -26,6 +28,9 @@ router.post(
   ],
   postNuevoPago
 );
+
+router.post("/create-preference", createPreference);
+router.post("/webhook", recibirWebhook);
 
 router.delete(
   "/:id", 
