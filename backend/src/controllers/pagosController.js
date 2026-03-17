@@ -69,9 +69,9 @@ export const createPreference = async (req, res) => {
           }
         ],
         back_urls: {
-          success: "http://localhost:5173",
-          failure: "http://localhost:5173",
-          pending: "http://localhost:5173"
+          success: process.env.FRONTEND_URL || "http://localhost:5173",
+          failure: process.env.FRONTEND_URL || "http://localhost:5173",
+          pending: process.env.FRONTEND_URL || "http://localhost:5173"
         },
         metadata: {
           user_id: usuarioId
