@@ -19,7 +19,7 @@ const app = express();
 conectarMongo();
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "*", // Permite tu Netlify o todo si no está definido
+  origin: process.env.FRONTEND_URL || "'https://rococo-meerkat-1bfc7a.netlify.app'", // Permite tu Netlify o todo si no está definido
   optionsSuccessStatus: 200
 };
 
