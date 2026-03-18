@@ -1,0 +1,1 @@
+import{bm as l,i as t}from"./index-D_dwYALD.js";const a=l("auth",()=>{let e=t(""),r=t(null),u=t(""),o=t(null),s=t(0);return{token:e,usuario:r,rol:u,sessionStart:o,unreadCount:s}},{persist:!0});export{a as u};

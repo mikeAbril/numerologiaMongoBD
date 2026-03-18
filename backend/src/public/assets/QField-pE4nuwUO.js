@@ -1,0 +1,1 @@
+import{k as e,b4 as t,b5 as s,bb as a,b6 as r}from"./index-D_dwYALD.js";const l=e({name:"QField",inheritAttrs:!1,props:{...s,tag:{type:String,default:"label"}},emits:t,setup(){return a(r({tagProp:!0}))}});export{l as Q};
