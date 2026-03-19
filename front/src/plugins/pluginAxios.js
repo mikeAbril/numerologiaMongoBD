@@ -26,4 +26,17 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 503 && error.response.data?.mantenimiento) {
+      const authStore = useAuthStore();
+      if (authStore.usuario?.rol !== 'ADMIN') {
+        window.location.hash = '/mantenimiento';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;

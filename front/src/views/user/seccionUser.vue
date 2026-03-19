@@ -38,7 +38,7 @@
           <q-tab name="oracle" icon="psychic" label="Oráculo" />
           <q-tab name="seals" icon="auto_awesome" label="Grimorio" />
           <q-tab name="vault" icon="history_edu" label="Archivo" />
-          <q-tab name="payments" icon="workspace_premium" label="Suscripción" />
+          <q-tab name="payments" icon="workspace_premium" label="Ofrendas (Pagos)" />
         </q-tabs>
       </div>
     </q-header>
