@@ -31,8 +31,8 @@
 
           <!-- BARRA DE PROGRESO SI ESTÁ BLOQUEADO -->
           <div class="full-width q-mt-lg" v-if="!sello.unlocked">
-             <q-linear-progress :value="0.3" color="grey-9" track-color="transparent" />
-             <div class="text-center text-grey-9 q-mt-xs" style="font-size: 8px">AVANCE: 30%</div>
+             <q-linear-progress :value="sello.p" color="grey-9" track-color="transparent" />
+             <div class="text-center text-grey-9 q-mt-xs" style="font-size: 8px">AVANCE: {{ Math.floor(sello.p * 100) }}%</div>
           </div>
         </q-card>
       </div>
@@ -42,9 +42,9 @@
     <div class="row justify-center q-mt-xl">
        <q-card class="master-seal-card glass-card-dark q-pa-xl text-center full-width">
           <div class="text-h5 cinzel-font text-amber-5 q-mb-md">La Gran Sincronización</div>
-          <p class="text-grey-4">Colecciona los 12 sellos para desbloquear la <strong>Lectura de la Matriz Cuántica</strong> (Función Secreta).</p>
+          <p class="text-grey-4">Colecciona los 8 sellos para desbloquear la <strong>Lectura de la Matriz Cuántica</strong> (Función Secreta).</p>
           <div class="row justify-center q-gutter-x-sm q-mt-md">
-             <div v-for="i in 12" :key="i" class="mini-slot" :class="{ 'filled': i <= 3 }"></div>
+             <div v-for="i in 8" :key="i" class="mini-slot" :class="{ 'filled': i <= unlockedCount }"></div>
           </div>
        </q-card>
     </div>
@@ -52,21 +52,40 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../store/Auth'
+import { getData } from '../../services/services'
 
 const authStore = useAuthStore()
+const lecturasObj = ref([])
 
-const sellos = computed(() => [
-    { id: 1, nombre: "SELLO DEL INICIADO", icon: "auto_awesome", desc: "Has cruzado el umbral del destino.", unlocked: true, color: "#6366f1" },
-    { id: 2, nombre: "ALMA CONSTANTE", icon: "local_fire_department", desc: "7 días en sintonía con el cosmos.", unlocked: true, color: "#f59e0b" },
-    { id: 3, nombre: "ILUMINADO", icon: "workspace_premium", desc: "Has alcanzado la Ascensión Premium.", unlocked: authStore.usuario?.estado === 1, color: "#fbbf24" },
-    { id: 4, nombre: "EL GUARDIÁN", icon: "security", desc: "Has protegido tu energía por 30 días.", unlocked: false, color: "#10b981" },
-    { id: 5, nombre: "OJO DEL DESTINO", icon: "psychic", desc: "10 consultas al Oráculo Diario.", unlocked: false, color: "#ec4899" },
-    { id: 6, nombre: "VINCULADOR", icon: "favorite", desc: "Has calculado 5 compatibilidades.", unlocked: false, color: "#ef4444" },
-    { id: 7, nombre: "MAESTRO RITUAL", icon: "flare", desc: "Completaste 10 rituales diarios.", unlocked: false, color: "#a855f7" },
-    { id: 8, nombre: "CRONISTA", icon: "history_edu", desc: "Tu historial ha superado los 20 registros.", unlocked: false, color: "#3b82f6" }
-])
+onMounted(async () => {
+    try {
+        const res = await getData(`lectura/${authStore.usuario._id}`)
+        if (res && res.lecturas) {
+            lecturasObj.value = res.lecturas
+        }
+    } catch(e) {}
+})
+
+const sellos = computed(() => {
+    const l = lecturasObj.value
+    const diarias = l.filter(x => x.tipo === 'diaria')
+    const principal = l.filter(x => x.tipo === 'principal')
+    
+    return [
+        { id: 1, nombre: "SELLO DEL INICIADO", icon: "auto_awesome", desc: "Has realizado tu lectura de esencia.", unlocked: principal.length > 0, color: "#6366f1", p: principal.length > 0 ? 1 : 0 },
+        { id: 2, nombre: "ALMA CONSTANTE", icon: "local_fire_department", desc: "7 días en sintonía con el cosmos.", unlocked: diarias.length >= 7, color: "#f59e0b", p: diarias.length / 7 },
+        { id: 3, nombre: "ILUMINADO", icon: "workspace_premium", desc: "Has alcanzado la Ascensión Premium.", unlocked: authStore.usuario?.estado === 1, color: "#fbbf24", p: authStore.usuario?.estado === 1 ? 1 : 0 },
+        { id: 4, nombre: "EL GUARDIÁN", icon: "security", desc: "Has protegido tu energía por 30 días.", unlocked: diarias.length >= 30, color: "#10b981", p: diarias.length / 30 },
+        { id: 5, nombre: "OJO DEL DESTINO", icon: "psychic", desc: "10 consultas al Oráculo Diario.", unlocked: diarias.length >= 10, color: "#ec4899", p: diarias.length / 10 },
+        { id: 6, nombre: "VINCULADOR", icon: "favorite", desc: "Has calculado 5 compatibilidades.", unlocked: false, color: "#ef4444", p: 0 },
+        { id: 7, nombre: "MAESTRO RITUAL", icon: "flare", desc: "Completaste 10 rituales diarios.", unlocked: false, color: "#a855f7", p: 0 },
+        { id: 8, nombre: "CRONISTA", icon: "history_edu", desc: "Tu historial ha superado los 20 registros.", unlocked: l.length > 20, color: "#3b82f6", p: l.length / 20 }
+    ]
+})
+
+const unlockedCount = computed(() => sellos.value.filter(s => s.unlocked).length)
 </script>
 
 <style scoped>

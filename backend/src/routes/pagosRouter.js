@@ -16,6 +16,7 @@ import {validarIdMongo} from "../middlewares/validarUsuario.js"
 
 const router = Router();
 router.get("/", getPagos);
+router.get("/usuario/:id", [validarIdMongo, validarCampos], getPagoUsuario);
 router.get("/:id", [validarIdMongo, validarCampos], getPagoUsuario);
 router.get("/estado/:id", [validarIdMongo, validarCampos], getEstadoUsuario);
 

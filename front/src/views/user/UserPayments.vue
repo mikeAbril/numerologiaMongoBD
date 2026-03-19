@@ -65,7 +65,14 @@
                 flat
                 class="bg-transparent"
                 :loading="loadingTable"
+                no-data-label="El cosmos aún no registra ofrendas en tu historial."
              >
+                <template v-slot:no-data="{ icon, message, filter }">
+                   <div class="full-width row flex-center text-amber-5 q-gutter-sm q-py-xl opacity-60">
+                      <q-icon size="40px" name="hourglass_empty" />
+                      <div class="text-h6 cinzel-font">{{ message }}</div>
+                   </div>
+                </template>
                 <template v-slot:body-cell-monto="props">
                    <q-td :props="props">
                       <q-badge color="amber-10" text-color="black" class="text-weight-bolder">
@@ -100,7 +107,7 @@ const pagos = ref([])
 const isPremium = computed(() => authStore.usuario?.estado === 1)
 
 const columns = [
-   { name: 'id', label: 'ID TRANSACCIÓN', align: 'left', field: '_id', format: val => `#${val.substring(0, 8)}` },
+   { name: 'id', label: 'ID TRANSACCIÓN', align: 'left', field: '_id', format: val => val ? `#${String(val).substring(0, 8)}` : '#N/A' },
    { name: 'monto', label: 'MONTO', align: 'center', field: 'monto' },
    { name: 'fecha', label: 'FECHA', align: 'center', field: 'fecha' },
    { name: 'status', label: 'ESTADO', align: 'right', field: row => 'APROBADO', format: val => val }
@@ -110,9 +117,13 @@ const loadPagos = async () => {
    loadingTable.value = true
    try {
       const res = await getData(`pagos/usuario/${authStore.usuario._id}`)
-      pagos.value = res
+      pagos.value = res || []
    } catch (e) {
-      console.log(e)
+      if (e.response && e.response.status === 404) {
+          pagos.value = [] // Ningún pago encontrado
+      } else {
+          console.error("Error cargando pagos:", e)
+      }
    } finally { loadingTable.value = false }
 }
 

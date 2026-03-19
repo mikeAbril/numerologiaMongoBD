@@ -202,7 +202,7 @@ export const forgotPassword = async (req, res, next) => {
 
 }
 export const resetPassword = async (req, res, next) => {
-try {
+  try {
     const { token, newPassword } = req.body;
     const tokenBusqueda = String(token).trim();
     console.log("🔍 Buscando usuario con token:", tokenBusqueda);
@@ -222,7 +222,6 @@ try {
     const salt = bcryptjs.genSaltSync(10);
     usuario.password = bcryptjs.hashSync(newPassword, salt);
 
-
     usuario.resetToken = undefined;
     usuario.resetTokenExpire = undefined;
     await usuario.save();
@@ -231,39 +230,8 @@ try {
   } catch (error) {
     console.error("🔥 Error en resetPassword:", error);
     next(error);
-
-  try {
-    const { id } = req.usuario;
-    const { passwordActual, passwordNueva } = req.body;
-
-    const usuario = await Usuario.findById(id);
-    if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
-
-    // Verificar password actual
-    const validPassword = bcryptjs.compareSync(passwordActual, usuario.password);
-    if (!validPassword) {
-      return res.status(400).json({ msg: "La contraseña actual es incorrecta" });
-    }
-
-    // Encriptar nueva password
-    const salt = bcryptjs.genSaltSync(10);
-    usuario.password = bcryptjs.hashSync(passwordNueva, salt);
-    await usuario.save();
-
-    await crearNotificacion(
-      usuario._id,
-      "Seguridad: Contraseña Cambiada",
-      "Has actualizado tu contraseña desde tu perfil.",
-      "password"
-    );
-
-    res.json({ msg: "Contraseña actualizada con éxito" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Error al cambiar contraseña" });
   }
 };
-
 
 const enviarEmailBienvenida = async (usuario) => {
   try {
@@ -276,8 +244,6 @@ const enviarEmailBienvenida = async (usuario) => {
     console.error('Error al enviar email', error.message);
   }
 };
-
-}
 
 export const cambiarPassword = async (req, res) => {
   try {

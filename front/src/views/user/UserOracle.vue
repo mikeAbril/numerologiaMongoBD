@@ -79,7 +79,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { postData } from '../../services/services'
+import { postData, getData } from '../../services/services'
 import { useAuthStore } from '../../store/Auth'
 import { useQuasar } from 'quasar'
 
@@ -92,8 +92,22 @@ const loadingDiaria = ref(false)
 
 const fetchLectura = async () => {
    try {
-      const res = await postData(`lectura/principal/${authStore.usuario._id}`)
-      if (res.status === 200) lecturaPrincipal.value = res.data.contenido
+      const res = await getData(`lectura/${authStore.usuario._id}`)
+      if (res && res.lecturas) {
+         const principal = res.lecturas.find(l => l.tipo === 'principal')
+         if (principal) {
+            lecturaPrincipal.value = typeof principal.contenido === 'string' ? JSON.parse(principal.contenido) : principal.contenido
+         }
+         
+         const diarias = res.lecturas.filter(l => l.tipo === 'diaria').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+         if (diarias.length > 0) {
+            const hoy = new Date().toLocaleDateString('es-ES')
+            const fechaLectura = new Date(diarias[0].createdAt).toLocaleDateString('es-ES')
+            if (hoy === fechaLectura) {
+               lecturaHoy.value = typeof diarias[0].contenido === 'string' ? JSON.parse(diarias[0].contenido) : diarias[0].contenido
+            }
+         }
+      }
    } catch (e) {}
 }
 
@@ -101,7 +115,7 @@ const generarLecturaPrincipal = async () => {
    loading.value = true
    try {
       const res = await postData(`lectura/principal/${authStore.usuario._id}`)
-      lecturaPrincipal.value = res.data.contenido
+      lecturaPrincipal.value = typeof res.data.contenido === 'string' ? JSON.parse(res.data.contenido) : res.data.contenido
    } catch (e) {} finally { loading.value = false }
 }
 

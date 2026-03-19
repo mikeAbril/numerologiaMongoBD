@@ -9,7 +9,7 @@ const routes = [
       { path: "", component: () => import("../views/loginUsers.vue") },
       { path: "crear-user", component: () => import("../views/crearUser.vue") },
       { path: "seccionUser", component: () => import("../views/user/seccionUser.vue") },
-      { path: "user-pro", component: () => import("../views/user/seccionUser_PROTOTIPO.vue") }
+      { path: "user-pro", component: () => import("../views/user/seccionUser.vue") }
     ]
   },
 
@@ -23,7 +23,7 @@ const routes = [
       { path: "vault", component: () => import("../views/user/UserVault.vue") },
       { path: "seals", component: () => import("../views/user/UserSeals.vue") },
       { path: "payments", component: () => import("../views/user/UserPayments.vue") },
-      { path: "premium", component: () => import("../views/user/seccionUser_PROTOTIPO.vue") }
+      { path: "premium", component: () => import("../views/user/seccionUser.vue") }
     ]
   },
 

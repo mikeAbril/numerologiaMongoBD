@@ -51,7 +51,7 @@
         <q-card class="glass-card-dark full-height q-pa-lg">
            <div class="text-h6 cinzel-font text-indigo-3 q-mb-xl">Variación Energética</div>
            <div class="energy-chart-mini flex justify-around items-end">
-              <div v-for="h in [40, 70, 55, 90, 60, 85, 45]" :key="h" class="bar-mini" :style="{ height: h + '%' }">
+              <div v-for="(h, index) in energyData" :key="index" class="bar-mini" :style="{ height: h + '%' }">
                  <q-tooltip>Energía: {{ h }}%</q-tooltip>
               </div>
            </div>
@@ -65,13 +65,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getData } from '../../services/services'
+import { useAuthStore } from '../../store/Auth'
+
+const authStore = useAuthStore()
+
+const energyData = ref([40, 70, 55, 90, 60, 85, 45])
 
 const kpis = ref([
-    { label: "VIBRACIÓN HOY", valor: "9.2", icon: "bolt", color: "amber-5", bg: "rgba(251, 191, 36, 0.1)", progreso: 0.92 },
-    { label: "RACHA MÍSTICA", valor: "15 DÍAS", icon: "local_fire_department", color: "orange-8", bg: "rgba(249, 115, 22, 0.1)", progreso: 0.5 },
-    { label: "ALINEACIÓN", valor: "98%", icon: "join_inner", color: "indigo-5", bg: "rgba(99, 102, 241, 0.1)", progreso: 0.98 }
+    { label: "VIBRACIÓN HOY", valor: "--", icon: "bolt", color: "amber-5", bg: "rgba(251, 191, 36, 0.1)", progreso: 0 },
+    { label: "RACHA MÍSTICA", valor: "0 DÍAS", icon: "local_fire_department", color: "orange-8", bg: "rgba(249, 115, 22, 0.1)", progreso: 0 },
+    { label: "ALINEACIÓN", valor: "0%", icon: "join_inner", color: "indigo-5", bg: "rgba(99, 102, 241, 0.1)", progreso: 0 }
 ])
+
+onMounted(async () => {
+    try {
+        const res = await getData(`lectura/${authStore.usuario._id}`)
+        if (res && res.lecturas) {
+            const diarias = res.lecturas.filter(l => l.tipo === 'diaria').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+            
+            // Racha
+            kpis.value[1].valor = `${diarias.length} DÍAS`
+            kpis.value[1].progreso = Math.min(diarias.length / 30, 1)
+
+            // Alineacion (basada en constancia)
+            const alineacion = diarias.length > 0 ? Math.min(50 + (diarias.length * 5), 99) : 10
+            kpis.value[2].valor = `${alineacion}%`
+            kpis.value[2].progreso = alineacion / 100
+
+            if (diarias.length > 0) {
+                let cont = diarias[0].contenido
+                if (typeof cont === 'string') cont = JSON.parse(cont)
+                const vib = cont.energiaDelDia || cont.numeroDia || "Alta"
+                kpis.value[0].valor = String(vib).replace('Vibración ', '').toUpperCase()
+                kpis.value[0].progreso = 0.9
+            }
+        }
+    } catch (e) {
+        console.error(e)
+    }
+})
 </script>
 
 <style scoped>
