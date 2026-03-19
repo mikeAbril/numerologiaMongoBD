@@ -135,9 +135,13 @@ const activarPremium = async () => {
             monto: 15000,
             description: "Plan Premium Astra AI"
         })
-        if (res.data?.init_point) window.location.href = res.data.init_point
+        if (res.init_point) {
+           window.location.href = res.init_point
+        } else {
+           $q.notify({ message: 'No se generó el punto de pago.', color: 'warning' })
+        }
     } catch (error) {
-        $q.notify({ message: 'Error en la conexión.', color: 'negative' })
+        $q.notify({ message: 'Error en la conexión con la pasarela.', color: 'negative' })
     } finally { loading.value = false }
 }
 

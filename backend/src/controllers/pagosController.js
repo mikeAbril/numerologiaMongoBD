@@ -88,10 +88,11 @@ export const createPreference = async (req, res) => {
           currency_id: "COP"
         }],
         back_urls: {
-          success: process.env.FRONTEND_URL || "http://localhost:5173",
-          failure: process.env.FRONTEND_URL || "http://localhost:5173",
-          pending: process.env.FRONTEND_URL || "http://localhost:5173"
+          success: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user`,
+          failure: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user`,
+          pending: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user`
         },
+        auto_return: "approved",
         metadata: { user_id: usuarioId }
       }
     });
