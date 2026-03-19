@@ -3,7 +3,7 @@ import { useAuthStore } from "../store/Auth.js";
 
 const axiosInstance = axios.create({
 
-  baseURL: 'https://numerologiamongobd-1.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   headers: {
     "Content-Type": "application/json"
   }

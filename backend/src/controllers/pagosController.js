@@ -79,6 +79,9 @@ export const createPreference = async (req, res) => {
     const { usuarioId, monto, description } = req.body;
     const preference = new Preference(client);
 
+    // Definir la URL base del backend para el webhook
+    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api";
+
     const result = await preference.create({
       body: {
         items: [{
@@ -93,6 +96,7 @@ export const createPreference = async (req, res) => {
           pending: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user`
         },
         auto_return: "approved",
+        notification_url: `${BACKEND_URL}/pagos/webhook`, // URL corregida
         metadata: { user_id: usuarioId }
       }
     });
@@ -107,15 +111,28 @@ export const createPreference = async (req, res) => {
 export const recibirWebhook = async (req, res) => {
   try {
     const topic = req.query.type || req.query.topic;
+    
+    // Mercado Pago envía notificaciones de varios tipos, nos interesa 'payment'
     if (topic === "payment") {
       const paymentId = req.query["data.id"] || req.query.id;
       const payment = new Payment(client);
+      
+      // En la v2 del SDK, el resultado de get es directamente el objeto de pago
       const paymentData = await payment.get({ id: paymentId });
-      const data = paymentData.body;
+      const data = paymentData;
 
       if (data.status === "approved") {
         const usuarioId = data.metadata.user_id;
-        await registrarPago({ usuarioId, monto: data.transaction_amount, tipo: "mercadopago", status: "approved" });
+        
+        // Evitar registros duplicados si el pago ya existe
+        await registrarPago({ 
+          usuarioId, 
+          monto: data.transaction_amount, 
+          tipo: "mercadopago", 
+          status: "approved",
+          transactionId: String(data.id) // Guardamos el ID único de la transacción
+        });
+        
         const usuarioActivo = await Usuario.findByIdAndUpdate(usuarioId, { estado: 1 }, { new: true });
 
         // Notificar al usuario
@@ -127,15 +144,18 @@ export const recibirWebhook = async (req, res) => {
         );
 
         // Notificar a los administradores
-        await notificarAdmins(
-          "Nuevo Pago (Mercado Pago)",
-          `El usuario ${usuarioActivo.nombre} ha activado su suscripción por $${data.transaction_amount}.`,
-          "pago"
-        );
+        if (usuarioActivo) {
+          await notificarAdmins(
+            "Nuevo Pago (Mercado Pago)",
+            `El usuario ${usuarioActivo.nombre} ha activado su suscripción por $${data.transaction_amount}.`,
+            "pago"
+          );
+        }
       }
     }
     res.sendStatus(200);
   } catch (error) {
+    console.error("Error en webhook:", error);
     res.sendStatus(500);
   }
 };

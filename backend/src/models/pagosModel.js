@@ -23,6 +23,11 @@ const pagoSchema = new mongoose.Schema({
     type: String,
     enum: ["pending", "approved", "rejected", "cancelled"],
     default: "pending"
+  },
+  transactionId: {
+    type: String,
+    unique: true,
+    sparse: true // Permite que otros tipos de pago no tengan este ID
   }
 });
 
@@ -41,6 +46,12 @@ export const obtenerPagosUsuario = async (idUsuario) => {
 };
 
 export const registrarPago = async (data) => {
+  // Si viene con transactionId, verificar si ya existe
+  if (data.transactionId) {
+    const pagoExistente = await Pago.findOne({ transactionId: data.transactionId });
+    if (pagoExistente) return pagoExistente;
+  }
+
   const nuevoPago = new Pago(data);
   const pagoGuardado = await nuevoPago.save();
   
