@@ -23,6 +23,7 @@
             <div class="col">
               <div class="text-overline text-grey-5">{{ kpi.label }}</div>
               <div class="text-h4 text-weight-bolder text-white">{{ kpi.valor }}</div>
+              <div v-if="kpi.subtitulo" class="text-caption text-amber-5 letter-spacing-2 text-weight-bold">{{ kpi.subtitulo }}</div>
             </div>
             <div class="kpi-icon-box" :style="{ background: kpi.bg }">
               <q-icon :name="kpi.icon" size="sm" :color="kpi.color" />
@@ -89,10 +90,61 @@ const mantraActual = ref(mantras[Math.floor(Math.random() * mantras.length)])
 const energyData = ref([40, 70, 55, 90, 60, 85, 45])
 
 const kpis = ref([
-    { label: "VIBRACIÓN HOY", valor: "--", icon: "bolt", color: "amber-5", bg: "rgba(251, 191, 36, 0.1)", progreso: 0 },
+    { label: "VIBRACIÓN HOY", valor: "--", subtitulo: "...", icon: "bolt", color: "amber-5", bg: "rgba(251, 191, 36, 0.1)", progreso: 0.5 },
     { label: "RACHA MÍSTICA", valor: "0 DÍAS", icon: "local_fire_department", color: "orange-8", bg: "rgba(249, 115, 22, 0.1)", progreso: 0 },
     { label: "ALINEACIÓN", valor: "0%", icon: "join_inner", color: "indigo-5", bg: "rgba(99, 102, 241, 0.1)", progreso: 0 }
 ])
+
+const reducir = (num) => {
+  if ([11, 22, 33].includes(num)) return num;
+  while (num > 9) {
+      num = num.toString().split("").reduce((a, b) => a + parseInt(b), 0);
+  }
+  return num;
+};
+
+const obtenerVibracionDiaInfo = (n) => {
+  const info = {
+    1: { nombre: "INICIO", desc: "Nuevas oportunidades" },
+    2: { nombre: "ARMONÍA", desc: "Paciencia y unión" },
+    3: { nombre: "BRILLO", desc: "Expresión creativa" },
+    4: { nombre: "ORDEN", desc: "Trabajo y disciplina" },
+    5: { nombre: "CAMBIO", desc: "Libertad y aventura" },
+    6: { nombre: "UNIÓN", desc: "Responsabilidad y amor" },
+    7: { nombre: "PENSAR", desc: "Introspección profunda" },
+    8: { nombre: "PODER", desc: "Éxito y abundancia" },
+    9: { nombre: "CIERRE", desc: "Humanismo y soltar" },
+    11: { nombre: "GUÍA", desc: "Iluminación espiritual" },
+    22: { nombre: "MAESTRO", desc: "Construcción global" },
+    33: { nombre: "AMOR", desc: "Guía universal" }
+  }
+  return info[n] || { nombre: "ALTA", desc: "Conexión pura" }
+}
+
+const calcularVibracionHoy = () => {
+    if (!authStore.usuario?.fechanacimiento) return;
+    
+    const fecha = new Date(authStore.usuario.fechanacimiento);
+    const diaNac = fecha.getUTCDate();
+    const mesNac = fecha.getUTCMonth() + 1;
+    
+    const hoy = new Date();
+    const diaHoy = hoy.getDate();
+    const mesHoy = hoy.getMonth() + 1;
+    const añoHoy = hoy.getFullYear();
+
+    // Año Personal = Día Nac + Mes Nac + Año Hoy
+    const añoP = reducir(diaNac + mesNac + reducir(añoHoy));
+    // Mes Personal = Año P + Mes Hoy
+    const mesP = reducir(añoP + mesHoy);
+    // Día Personal = Mes P + Día Hoy
+    const diaP = reducir(mesP + diaHoy);
+
+    const info = obtenerVibracionDiaInfo(diaP);
+    kpis.value[0].valor = `VIBRACIÓN ${diaP}`;
+    kpis.value[0].subtitulo = info.nombre;
+    kpis.value[0].progreso = diaP / 9;
+}
 
 onMounted(async () => {
     try {
@@ -101,22 +153,16 @@ onMounted(async () => {
             const diarias = res.lecturas.filter(l => l.tipo === 'diaria').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
             
             // Racha
-            kpis.value[1].valor = `${diarias.length} DÍAS`
-            kpis.value[1].progreso = Math.min(diarias.length / 30, 1)
+            const dias = diarias.length
+            kpis.value[1].valor = `${dias} ${dias === 1 ? 'DÍA' : 'DÍAS'}`
+            kpis.value[1].progreso = Math.min(dias / 30, 1)
 
             // Alineacion (basada en constancia)
-            const alineacion = diarias.length > 0 ? Math.min(50 + (diarias.length * 5), 99) : 10
+            const alineacion = dias > 0 ? Math.min(50 + (dias * 5), 99) : 10
             kpis.value[2].valor = `${alineacion}%`
             kpis.value[2].progreso = alineacion / 100
-
-            if (diarias.length > 0) {
-                let cont = diarias[0].contenido
-                if (typeof cont === 'string') cont = JSON.parse(cont)
-                const vib = cont.energiaDelDia || cont.numeroDia || "Alta"
-                kpis.value[0].valor = String(vib).replace('Vibración ', '').toUpperCase()
-                kpis.value[0].progreso = 0.9
-            }
         }
+        calcularVibracionHoy();
     } catch (e) {
         console.error(e)
     }
@@ -126,6 +172,7 @@ onMounted(async () => {
 <style scoped>
 .text-glow { text-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
 .cinzel-font { font-family: 'Cinzel', serif; }
+.line-height-1 { line-height: 1.1; }
 .letter-spacing-2 { letter-spacing: 2px; }
 
 .aura-divider {
@@ -163,9 +210,10 @@ onMounted(async () => {
 }
 
 .kpi-card-modern {
-  padding: 28px;
+  padding: 20px;
   position: relative;
   overflow: hidden;
+  height: 100%;
 }
 .kpi-card-modern:hover { transform: translateY(-8px) scale(1.02); }
 

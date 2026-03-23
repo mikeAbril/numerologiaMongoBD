@@ -16,22 +16,31 @@
                  <div class="tarot-card-inner">
                      <!-- DORSO DE LA CARTA -->
                      <div class="tarot-back holographic-hover flex flex-center column relative-position overflow-hidden">
-                         <div class="rune-border"></div>
-                         <q-icon name="stars" size="90px" class="text-gold q-mb-lg float-anim" />
-                         <div class="text-h3 cinzel-font text-gold text-center text-shadow">Esencia<br>Astral</div>
-                         <q-spinner-rings v-if="loadingPrincipal" color="amber" size="3em" class="q-mt-lg" />
+                        <div class="rune-border"></div>
+                        <q-icon name="stars" size="90px" class="text-gold q-mb-lg float-anim" />
+                        <div class="text-h3 cinzel-font text-gold text-center text-shadow">Esencia<br>Astral</div>
+                        
+                        <q-inner-loading :showing="loadingPrincipal" class="glass-loading">
+                            <q-spinner-orbit color="amber" size="4em" />
+                            <div class="text-amber-5 cinzel-font q-mt-md">Consultando los astros...</div>
+                        </q-inner-loading>
                      </div>
                      
-                     <!-- FRENTE DE LA CARTA -->
-                     <div class="tarot-front glass-card-dark q-pa-xl text-center flex column justify-center">
-                         <div class="text-h1 cinzel-font text-gold text-shadow glow-text q-mb-sm">{{ lecturaPrincipal?.numeroCamino || '...' }}</div>
-                         <div class="text-caption text-amber-5 letter-spacing-5 q-mb-lg">NÚMERO MAESTRO</div>
-                         <div class="aura-divider q-mx-auto q-mb-lg"></div>
-                         <p class="text-h5 font-light text-grey-3 q-mb-xl line-height-2">"{{ lecturaPrincipal?.descripcion }}"</p>
-                         <div class="row justify-center q-gutter-md">
-                             <q-chip v-for="t in (lecturaPrincipal?.talentos || [])" :key="t" outline class="gold-chip text-weight-bold" size="md">{{ t }}</q-chip>
-                         </div>
-                     </div>
+                    <!-- FRENTE DE LA CARTA -->
+                    <div class="tarot-front glass-card-dark q-pa-lg text-center flex column justify-start overflow-hidden">
+                        <div class="reading-content full-width q-pa-md flex-grow-1">
+                            <div class="text-h2 cinzel-font text-gold text-shadow glow-text q-mb-xs">{{ lecturaPrincipal?.numeroCamino || '...' }}</div>
+                            <div class="text-caption text-amber-5 letter-spacing-5 q-mb-md">NÚMERO MAESTRO</div>
+                            <div class="aura-divider q-mx-auto q-mb-md"></div>
+                            <p class="text-subtitle1 font-light text-grey-3 q-mb-lg line-height-2">"{{ lecturaPrincipal?.descripcion }}"</p>
+                            <div class="row justify-center q-gutter-sm q-mb-md overflow-hidden">
+                                <q-chip v-for="t in (lecturaPrincipal?.talentos || [])" :key="t" outline class="gold-chip text-weight-bold" size="md" style="max-width: 100%">
+                                  <div class="ellipsis">{{ t }}</div>
+                                </q-chip>
+                            </div>
+                            <div class="q-pb-xl q-mb-xl"></div> <!-- Mucho espacio extra para asegurar scroll -->
+                        </div>
+                    </div>
                  </div>
              </div>
         </div>
@@ -40,31 +49,35 @@
         <div class="col-12 col-md-5 flex flex-center">
              <div class="tarot-card-wrap" :class="{ 'flipped': lecturaHoy || isGlitching, 'lock-shake': isGlitching }" @click="!lecturaHoy && !isGlitching && handleLecturaDiaria()">
                  <div class="tarot-card-inner">
-                     <!-- DORSO -->
-                     <div class="tarot-back holographic-hover flex flex-center column relative-position overflow-hidden delay-float">
-                         <div class="rune-border"></div>
-                         <q-icon name="auto_awesome" size="90px" class="text-gold q-mb-lg float-anim" />
-                         <div class="text-h3 cinzel-font text-gold text-center text-shadow">Mensaje<br>Diario</div>
-                         <q-spinner-rings v-if="loadingDiaria" color="amber" size="3em" class="q-mt-lg" />
-                     </div>
+                    <!-- DORSO -->
+                    <div class="tarot-back holographic-hover flex flex-center column relative-position overflow-hidden delay-float">
+                        <div class="rune-border"></div>
+                        <q-icon name="auto_awesome" size="90px" class="text-gold q-mb-lg float-anim" />
+                        <div class="text-h3 cinzel-font text-gold text-center text-shadow">Mensaje<br>Diario</div>
+                        
+                        <q-inner-loading :showing="loadingDiaria" class="glass-loading">
+                            <q-spinner-orbit color="amber" size="4em" />
+                            <div class="text-amber-5 cinzel-font q-mt-md">Develando tu destino...</div>
+                        </q-inner-loading>
+                    </div>
                      
                      <!-- FRENTE -->
-                     <div class="tarot-front glass-card-dark q-pa-xl text-center flex column justify-center" :class="{'error-glow': isGlitching}">
+                     <div class="tarot-front glass-card-dark q-pa-lg text-center flex column justify-start overflow-hidden" :class="{'error-glow': isGlitching}">
                          
                          <!-- PREMIUM: LECTURA EXITOSA -->
-                         <div v-if="lecturaHoy">
-                            <h2 class="cinzel-font text-gold q-mb-xl text-shadow">{{ lecturaHoy.energiaDelDia }}</h2>
-                            <div class="text-h4 italic text-white q-mb-xl font-light">"{{ lecturaHoy.mensaje }}"</div>
-                            <div class="aura-divider q-mx-auto q-mb-lg"></div>
-                            <p class="text-h5 font-light text-grey-4 line-height-2">{{ lecturaHoy.consejo }}</p>
+                         <div v-if="lecturaHoy" class="reading-content full-width q-pa-md">
+                            <h5 class="cinzel-font text-gold q-mb-md text-shadow q-mt-none">{{ lecturaHoy.energiaDelDia }}</h5>
+                            <div class="text-h6 italic text-white q-mb-md font-light line-height-1-5">"{{ lecturaHoy.mensaje }}"</div>
+                            <div class="aura-divider q-mx-auto q-mb-md"></div>
+                            <p class="text-body1 font-light text-grey-4 line-height-1-8 text-justify">{{ lecturaHoy.consejo }}</p>
                          </div>
 
                          <!-- FREE: BLOQUEO PREMIUM (CARTA QUEMADA/ROJA) -->
-                         <div v-else-if="isGlitching" class="flex flex-center column text-center">
-                             <q-icon name="lock" size="100px" color="red-5" class="q-mb-lg lock-pulse" />
-                             <div class="text-h2 cinzel-font text-red-5 text-weight-bold q-mb-md text-shadow">Carta Sellada</div>
-                             <p class="text-h5 text-grey-3 font-light q-mb-xl line-height-2 q-px-md">Los secretos diarios del universo están encriptados. Adquiere el Pase Astral para romper el sello y leerla.</p>
-                             <q-btn label="OBTENER PREMIUM" color="red-10" rounded class="text-weight-bold q-px-xl q-py-lg text-h6 pulse-error-btn" to="/user/payments" />
+                         <div v-else-if="isGlitching" class="flex flex-center column text-center full-height">
+                             <q-icon name="lock" size="80px" color="red-5" class="q-mb-md lock-pulse" />
+                             <div class="text-h4 cinzel-font text-red-5 text-weight-bold q-mb-sm text-shadow">Carta Sellada</div>
+                             <p class="text-body1 text-grey-3 font-light q-mb-lg line-height-1-5 q-px-md">Los secretos diarios del universo están encriptados. Adquiere el Pase Astral para romper el sello y leerla.</p>
+                             <q-btn label="OBTENER PREMIUM" color="red-10" rounded class="text-weight-bold q-px-xl q-py-md text-subtitle1 pulse-error-btn" to="/user/payments" />
                          </div>
 
                      </div>
@@ -153,6 +166,8 @@ onMounted(() => fetchLectura())
 
 <style scoped>
 .cinzel-font { font-family: 'Cinzel', serif; }
+.line-height-1-5 { line-height: 1.5; }
+.line-height-1-8 { line-height: 1.8; }
 .line-height-2 { line-height: 1.8; }
 .font-light { font-weight: 300; }
 .text-gold { color: #d4af37; }
@@ -160,6 +175,21 @@ onMounted(() => fetchLectura())
 .letter-spacing-2 { letter-spacing: 2px; }
 .letter-spacing-5 { letter-spacing: 5px; }
 .text-shadow { text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+
+.reading-content {
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,175,55,0.3) transparent;
+}
+
+.reading-content::-webkit-scrollbar {
+  width: 4px;
+}
+.reading-content::-webkit-scrollbar-thumb {
+  background: rgba(212,175,55,0.3);
+  border-radius: 10px;
+}
 
 .tarot-page {
    min-height: 80vh;
@@ -247,6 +277,11 @@ onMounted(() => fetchLectura())
 .holographic-hover:hover { 
   border-color: rgba(212,175,55,1); 
   box-shadow: 0 30px 70px rgba(0,0,0,0.9), inset 0 0 50px rgba(212,175,55,0.3); 
+}
+
+.glass-loading {
+  background: rgba(10, 15, 30, 0.8) !important;
+  backdrop-filter: blur(5px);
 }
 
 /* ANIMACIONES DE ERROR (GLITCH LOCK) */
