@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const pagoSchema = new mongoose.Schema({
   usuarioId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario', 
+    ref: 'Usuario',
     required: true
   },
   monto: {
@@ -37,7 +37,7 @@ export default Pago;
 
 
 export const obtenerPagos = async () => {
- 
+
   return await Pago.find().populate("usuarioId", "nombre email");
 };
 
@@ -54,7 +54,7 @@ export const registrarPago = async (data) => {
 
   const nuevoPago = new Pago(data);
   const pagoGuardado = await nuevoPago.save();
-  
+
   return await Pago.findById(pagoGuardado._id).populate("usuarioId", "nombre email");
 };
 

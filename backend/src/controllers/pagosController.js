@@ -6,6 +6,7 @@ import {
   verificarEstadoUsuario
 } from "../models/pagosModel.js";
 
+import Configuracion from "../models/configModel.js";
 import Usuario from "../models/usuariosModel.js";
 import { crearNotificacion, notificarAdmins } from "./notificacionesController.js";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
@@ -36,6 +37,26 @@ export const getPagos = async (req, res) => {
   }
 };
 
+const calculateExpirationDate = async (monto, currentExpiry) => {
+  let daysToAdd = 0;
+  
+  // Obtener precios configurados desde el panel de admin
+  let config = await Configuracion.findOne();
+  if (!config) config = { precioMensual: 15000, precioTrimestral: 40000, precioAnual: 140000 };
+
+  if (monto >= config.precioAnual) daysToAdd = 365;
+  else if (monto >= config.precioTrimestral) daysToAdd = 90;
+  else if (monto >= config.precioMensual) daysToAdd = 30;
+  else if (monto >= 14000) daysToAdd = 30; // Margen de seguridad para precios antiguos
+
+  const baseDate = (currentExpiry && new Date(currentExpiry) > new Date()) 
+    ? new Date(currentExpiry) 
+    : new Date();
+  
+  baseDate.setDate(baseDate.getDate() + daysToAdd);
+  return baseDate;
+};
+
 export const getPagoUsuario = async (req, res) => {
   try {
     const pago = await obtenerPagosUsuario(req.params.id);
@@ -49,8 +70,16 @@ export const getPagoUsuario = async (req, res) => {
 export const postNuevoPago = async (req, res) => {
   try {
     const nuevoPago = await registrarPago(req.body);
-    const { usuarioId } = req.body;
-    const usuarioActivo = await Usuario.findByIdAndUpdate(usuarioId, { estado: 1 }, { new: true });
+    const { usuarioId, monto } = req.body;
+    
+    const user = await Usuario.findById(usuarioId);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+ 
+    const newExpiry = await calculateExpirationDate(monto, user.suscripcionExpira);
+    const usuarioActivo = await Usuario.findByIdAndUpdate(usuarioId, { 
+      estado: 1, 
+      suscripcionExpira: newExpiry 
+    }, { new: true });
 
     // Notificar al usuario
     await crearNotificacion(
@@ -133,7 +162,13 @@ export const recibirWebhook = async (req, res) => {
           transactionId: String(data.id) // Guardamos el ID único de la transacción
         });
         
-        const usuarioActivo = await Usuario.findByIdAndUpdate(usuarioId, { estado: 1 }, { new: true });
+        const user = await Usuario.findById(usuarioId);
+        const newExpiry = await calculateExpirationDate(data.transaction_amount, user?.suscripcionExpira);
+ 
+        const usuarioActivo = await Usuario.findByIdAndUpdate(usuarioId, { 
+          estado: 1, 
+          suscripcionExpira: newExpiry 
+        }, { new: true });
 
         // Notificar al usuario
         await crearNotificacion(

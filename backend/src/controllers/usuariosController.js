@@ -72,6 +72,14 @@ export const postUsuario = async (req, res) => {
       "registro"
     );
 
+    // Notificación de bienvenida para el usuario
+    await crearNotificacion(
+      usuario._id,
+      "🌠 ¡Bienvenida al Cosmos!",
+      `Hola ${usuario.nombre}, tu viaje astral comienza ahora. Explora tus lecturas diarias y descubre los secretos de los números.`,
+      "registro"
+    );
+
     await enviarEmailBienvenida(usuario)
 
     const usuarioValido = usuario.toObject();
@@ -155,6 +163,13 @@ export const putUsuarioInactivar = async (req, res) => {
       return res.status(404).json({ msg: "Usuario no encontrado" })
     }
 
+    // Notificar a los administradores
+    await notificarAdmins(
+      "Usuario Inactivado",
+      `El usuario ${usuario.nombre} (${usuario.email}) ha sido puesto en estado inactivo.`,
+      "sistema"
+    );
+
     res.json({ msg: "Usuario inactivado correctamente", usuario })
   } catch (error) {
     res.status(500).json({ msg: error.message })
@@ -171,6 +186,13 @@ export const deleteUsuario = async (req, res) => {
     if (!usuario) {
       return res.status(404).json({ msg: "Usuario no encontrado" })
     }
+
+    // Notificar a los administradores (usamos los datos antes de borrar si fuera necesario, pero aquí 'usuario' tiene la info)
+    await notificarAdmins(
+      "Usuario Eliminado Definitivamente",
+      `Se ha eliminado la cuenta de ${usuario.nombre} (${usuario.email}) de la base de datos.`,
+      "sistema"
+    );
 
     res.json({ msg: "Usuario eliminado correctamente" })
   } catch (error) {
@@ -225,6 +247,13 @@ export const resetPassword = async (req, res, next) => {
     usuario.resetToken = undefined;
     usuario.resetTokenExpire = undefined;
     await usuario.save();
+
+    await crearNotificacion(
+      usuario._id,
+      "🛡️ Contraseña Restablecida",
+      "Tu contraseña ha sido actualizada correctamente mediante el proceso de recuperación.",
+      "password"
+    );
 
     res.json({ error: false, mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {

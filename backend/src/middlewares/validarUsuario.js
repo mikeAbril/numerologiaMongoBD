@@ -22,11 +22,12 @@ export const validarUsuarioActivoMiddleware = async (req , res, next) => {
                 msg: `El usuario con  ${id} no existe`
             });
         }
-         if(usuario.estado === 0){
+         if(usuario.estado === 2){
                 return res.status(400).json({
                     msg: `El usuario con  ${id} esta inactivo`
                 })
             }
+        next();
     }catch (error){
         console.error(error);
         res.status(500).json({
