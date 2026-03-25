@@ -1,4 +1,3 @@
-import { text } from 'express';
 import nodemailer from 'nodemailer'
 
 let transporter = null;
@@ -6,10 +5,15 @@ let transporter = null;
 const getTransporter = () => {
     if (!transporter) {
         transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465, 
+            secure: true, 
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
     }
@@ -67,7 +71,3 @@ export const sendResetCode = async (email, code) =>{
         throw new Error('Error al enviar el código de recuperación')       
     }
 };
-
-
-
-
