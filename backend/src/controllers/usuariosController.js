@@ -80,14 +80,14 @@ export const postUsuario = async (req, res) => {
       "registro"
     );
 
-    await enviarEmailBienvenida(usuario)
+    enviarEmailBienvenida(usuario); // No usar await para que no bloquee la respuesta
 
     const usuarioValido = usuario.toObject();
     delete usuarioValido.password;
 
     res.status(201).json({
       msg: "Usuario creado correctamente",
-      usuario
+      usuario: usuarioValido
     })
   } catch (error) {
     res.status(500).json({ msg: error.message })

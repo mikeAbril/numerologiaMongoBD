@@ -66,7 +66,7 @@
               </template>
             </q-input>
 
-              <q-input filled v-model="fechaNacimiento" label="Fecha de Nacimiento" type="date" dark>
+              <q-input filled v-model="fechanacimiento" label="Fecha de Nacimiento" type="date" dark>
                 <template v-slot:prepend>
                   <q-icon name="calendar_month" />
                 </template>
@@ -76,7 +76,7 @@
 
             <q-card-actions>
               <q-btn label="Crear Cuenta" class="gold-button full-width" :loading="loading" @click="crearUsuario()" />
-              <p class="texto">Ya tienes una cuenta? <a href="./loginUsers.vue">Iniciar Sesión</a></p>
+              <p class="texto">Ya tienes una cuenta? <router-link to="/" style="color: var(--q-primary); text-decoration: none; font-weight: bold;">Iniciar Sesión</router-link></p>
             </q-card-actions>
 
           </q-card>
@@ -108,19 +108,20 @@ const username = ref("");
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
-const fechaNacimiento = ref("");
+const fechanacimiento = ref("");
 const loading = ref(false)
 
 const crearUsuario = async () => {
-  if (!username.value || !email.value || !password || !fechaNacimiento) {
+  if (!username.value || !email.value || !password.value || !fechanacimiento.value) {
     errorAlert("Por favor, rellene todos los campos", "Para crear la cuenta")
+    return
   }
   loading.value = true
   try {
     const Usuario = await postData("usuario", {
       nombre: username.value,
       email: email.value,
-      fechaNacimiento: fechaNacimiento.value,
+      fechanacimiento: fechanacimiento.value,
       password: password.value,
       rol: "user"
     })
@@ -130,9 +131,9 @@ const crearUsuario = async () => {
     }
 
   } catch (error) {
-    console.log(error.response);
-
-    errorAlert(error.response.data.msg || error.response.data.errors[0].msg)
+    console.log(error);
+    const msg = error.response?.data?.msg || error.response?.data?.errors?.[0]?.msg || "Error al crear el usuario";
+    errorAlert(msg)
   } finally {
     loading.value = false
   }
