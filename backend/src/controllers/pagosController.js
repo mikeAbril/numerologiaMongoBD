@@ -108,8 +108,8 @@ export const createPreference = async (req, res) => {
     const { usuarioId, monto, description } = req.body;
     const preference = new Preference(client);
 
-    // Definir la URL base del backend para el webhook
-    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api";
+    const cleanFrontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    const BACKEND_URL = (process.env.BACKEND_URL || "http://localhost:3000/api").replace(/\/$/, "");
 
     const result = await preference.create({
       body: {
@@ -120,12 +120,12 @@ export const createPreference = async (req, res) => {
           currency_id: "COP"
         }],
         back_urls: {
-          success: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user/payments?status=success`,
-          failure: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user/payments?status=failure`,
-          pending: `${process.env.FRONTEND_URL || "http://localhost:5173"}#/user/payments?status=pending`
+          success: `${cleanFrontendUrl}/#/user/payments?status=success`,
+          failure: `${cleanFrontendUrl}/#/user/payments?status=failure`,
+          pending: `${cleanFrontendUrl}/#/user/payments?status=pending`
         },
         auto_return: "approved",
-        notification_url: `${BACKEND_URL}/pagos/webhook`, // URL corregida
+        notification_url: `${BACKEND_URL}/pagos/webhook`,
         metadata: { user_id: usuarioId }
       }
     });

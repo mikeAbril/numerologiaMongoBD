@@ -22,7 +22,7 @@
 
         <div class="title-panel">
           <h1>Numerology</h1>
-          <p>ADMINISTRATIVE PORTAL</p>
+          <p>Portal de Administración</p>
         </div>
 
       </div>

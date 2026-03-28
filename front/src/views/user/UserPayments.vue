@@ -103,11 +103,12 @@
                 <p class="text-grey-4 text-h6 font-light q-mb-xl">Manteniendo el portal cósmico abierto. Por favor,
                     completa tu ofrenda en la ventana (pestaña) de MercadoPago.</p>
 
-                <q-btn label="Ya completé el Pago" color="amber-10" text-color="black" rounded
-                    class="text-weight-bold letter-spacing-2 q-px-xl q-py-sm shadow-up"
-                    @click="checkPaymentAndShowReceipt" />
-                <div class="q-mt-md text-caption text-amber-5 animate-pulse">Escuchando los ecos del cosmos...</div>
-                <q-btn flat label="Cancelar Transmutación" color="grey-5" class="q-mt-sm" @click="cancelPaymentFlow" />
+                <div class="q-mt-xl text-h6 text-amber-5 animate-pulse letter-spacing-2">
+                    🔮 ESCUCHANDO LOS ECOS DEL COSMOS...
+                </div>
+                <div class="text-caption text-grey-6 q-mt-sm">Detectando tu ofrenda automáticamente</div>
+                
+                <q-btn flat label="Cancelar Transmutación" color="red-10" class="q-mt-xl" @click="cancelPaymentFlow" />
             </q-card>
         </q-dialog>
 
@@ -339,26 +340,27 @@ const activarPremium = async (plan) => {
 const startPolling = () => {
     if (pollInterval) clearInterval(pollInterval)
     
-    // Consultar cada 4 segundos
+    // Consultar cada 3 segundos para una sensación más rápida
     pollInterval = setInterval(async () => {
         try {
-            // Consultamos el estado directamente desde el endpoint especializado
             const res = await getData(`pagos/estado/${authStore.usuario._id}`)
             
             if (res && res.estado === 1) {
-                // Actualizamos el store para que la UI se refresque (vibraciones, mensajes, etc.)
                 authStore.usuario.estado = 1
                 if (res.suscripcionExpira) {
                     authStore.usuario.suscripcionExpira = res.suscripcionExpira
                 }
                 
                 stopPolling()
-                checkPaymentAndShowReceipt()
+                // Al detectar éxito, esperamos un instante místico antes de mostrar el recibo
+                setTimeout(() => {
+                    checkPaymentAndShowReceipt()
+                }, 1500)
             }
         } catch (error) {
             console.error("Error en sondeo astral:", error)
         }
-    }, 4000)
+    }, 3000)
 }
 
 const stopPolling = () => {
